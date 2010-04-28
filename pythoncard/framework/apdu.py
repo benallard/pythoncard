@@ -1,0 +1,2 @@
+class APDU(object):
+    pass
