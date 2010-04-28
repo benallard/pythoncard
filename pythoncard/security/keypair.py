@@ -1,0 +1,2 @@
+class KeyPair(object):
+    pass

@@ -1,0 +1,2 @@
+class AID(object):
+    pass

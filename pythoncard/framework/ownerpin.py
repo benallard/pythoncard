@@ -1,0 +1,2 @@
+class OwnerPIN(object):
+    pass
