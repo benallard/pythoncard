@@ -1,6 +1,7 @@
 import unittest
 
 from pythoncard.framework import AID
+from python.lang import ArrayIndexOutOfBoundsException
 
 class testAID(unittest.TestCase):
 
@@ -31,5 +32,5 @@ class testAID(unittest.TestCase):
         try:
             self.assertEquals(a1.getBytes(dest, 5), 8)
             self.fail()
-        except IndexError:
+        except ArrayIndexOutOfBoundsException:
             pass
