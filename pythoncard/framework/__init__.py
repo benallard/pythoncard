@@ -17,3 +17,20 @@ Applet = applet.Applet
 AID = aid.AID
 APDU = apdu.APDU
 OwnerPIN = ownerpin.OwnerPIN
+
+class CardRuntimeException(Exception):
+    def __init__(self, reason):
+        self._reason = reason
+
+    def getReason(self):
+        return self._reason
+
+    def setReason(self, reason):
+        self._reason = reason
+
+    @classmethod
+    def throwIt(classs, reason):
+        raise classs(reason)
+
+class ISOException(CardRuntimeException):
+    pass
