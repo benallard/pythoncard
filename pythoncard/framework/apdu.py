@@ -1,4 +1,6 @@
-BUFFER = []
+from pythoncard.framework import APDUException, ISO7816
+
+BUFFER = [0 for i in range(255)]
 
 class APDU(object):
     """
@@ -27,38 +29,15 @@ class APDU(object):
     STATE_ERROR_T1_IFD_ABORT = -4
 
     def __init__(self, bytesarr):
-        BUFFER = bytesarr
-        self.state = self.STATE_INITIAL
+        for i in range(len(bytesarr)):
+            BUFFER[i] = bytesarr[i]
+        self._state = self.STATE_INITIAL
 
     def getBuffer(self):
-        pass
-
-    @staticmethod
-    def getCLAChannel():
-        pass
-
-    @staticmethod
-    def getCurrentAPDU():
-        return None
-
-    @staticmethod
-    def getCurrentAPDUBuffer():
         return BUFFER
-
-    def getCurrentState(self):
-        pass
 
     @staticmethod
     def getInBlockSize():
-        pass
-
-    def getIncomingLength(self):
-        pass
-
-    def getNAD(self):
-        pass
-
-    def getOffsetCdata(self):
         pass
 
     @staticmethod
@@ -69,40 +48,84 @@ class APDU(object):
     def getProtocol():
         pass
 
+    def getNAD(self):
+        pass
+
+    def setOutgoing(self):
+        if self._state >= self.STATE_OUTGOING:
+            raise APDUException(APDUException.ILLEGAL_USE)
+        self._state = self.STATE_OUTGOING
+
+    def setoutgoingNoChaining(self):
+        pass
+
+    def setOutgoingLength(self, len):
+        if self._state < self.STATE_OUTGOING:
+            raise APDUException(APDUException.ILLEGAL_USE)
+        self._state = self.STATE_OUTGOING_LENGTH_KNOWN
+        self._outgoinglength = len
+
+    def receiveBytes(self, bOffs):
+        """ Everything is returned at once ... """
+        if ((self._state < self.STATE_PARTIAL_INCOMING) or
+            (self._state >= self.STATE_OUTGOING)):
+            raise APDUException(APDUException.ILLEGAL_USE)
+        return 0
+
+    def setIncomingAndReceive(self):
+        if self._state != self.STATE_INITIAL:
+            raise APDUException(APDUException.ILLEGAL_USE)
+        self._state = self.STATE_FULL_INCOMING
+        return self.getIncomingLength()
+
+    def sendBytes(self, bOffs, len):
+        if self._state < self.STATE_OUTGOING_LENGTH_KNOWN:
+            raise APDUException(APDUException.ILLEGAL_USE)
+        self._outgoinglength -= len
+        if self._outgoinglength > 0:
+            self._state = self.STATE_PARTIAL_OUTGOING
+        else:
+            self._state = self.STATE_FULL_OUTGOING
+
+    def sendBytesLong(self, outData, bOffs, len):
+        pass
+
+    def setOutgoingAndSend(self, bOffs, len):
+        self.setOutgoingLength(len)
+        self.sendBytes(bOffs, len)
+
+    def getCurrentState(self):
+        return self._state
+
+    @staticmethod
+    def getCurrentAPDU():
+        return None
+
+    @staticmethod
+    def getCurrentAPDUBuffer():
+        return BUFFER
+
+    @staticmethod
+    def getCLAChannel():
+        return BUFFER[ISO7816.OFFSET_CLA] & 0x3
+
+    @staticmethod
+    def waitExtension():
+        pass
+
     def isCommandChainingCLA(self):
+        pass
+
+    def isSecureMessagingCLA(self):
         pass
 
     def isISOInterindustryCLA(self):
         pass
 
-    def isSecureMessagingCLA(self):
-        pass
-    
-    def receiveBytes(self, bOffs):
+    def getIncomingLength(self):
+        return BUFFER[ISO7816.OFFSET_LC]
+
+    def getOffsetCdata(self):
         pass
 
-    def sendBytes(self, bOffs, len):
-        pass
-
-    def sendBytesLong(self, outData, bOffs, len):
-        pass
-
-    def setIncomingAndReceive(self):
-        pass
-
-    def setOutgoing(self):
-        pass
-
-    def setOutgoingAndSend(self, bOffs, len):
-        pass
-
-    def setOutgoingLength(self, len):
-        pass
-
-    def setoutgoingNoChaining(self):
-        pass
-
-    @staticmethod
-    def waitExtension():
-        pass
 

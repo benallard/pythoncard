@@ -29,7 +29,16 @@ class ISOException(CardRuntimeException):
     pass
 
 class PINException(CardRuntimeException):
-    pass
+    ILLEGAL_VALUE = 0
+
+class APDUException(CardRuntimeException):
+    BAD_LENGTH = 0
+    BUFFER_BOUNDS = 1
+    ILLEGAL_USE = 2
+    IO_ERROR = 3
+    NO_T0_GETRESPONSE = 4
+    NO_T0_REISSUE = 5
+    T1_IFD_ABORT = 6
 
 from pythoncard.framework import applet, aid, apdu, ownerpin
 
