@@ -1,6 +1,6 @@
 class AID(object):
     def __init__(self, bArray, offset, length):
-        if length < 6:
+        if (length < 5) or (length > 16):
             raise ValueError(length)
         if len(bArray) < offset + length:
             raise IndexError(offset + length)
