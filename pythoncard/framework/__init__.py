@@ -11,13 +11,6 @@ from pythoncard.framework import Applet
 
 """
 
-from pythoncard.framework import applet, aid, apdu, ownerpin
-
-Applet = applet.Applet
-AID = aid.AID
-APDU = apdu.APDU
-OwnerPIN = ownerpin.OwnerPIN
-
 class CardRuntimeException(Exception):
     def __init__(self, reason):
         self._reason = reason
@@ -34,3 +27,14 @@ class CardRuntimeException(Exception):
 
 class ISOException(CardRuntimeException):
     pass
+
+class PINException(CardRuntimeException):
+    pass
+
+from pythoncard.framework import applet, aid, apdu, ownerpin
+
+Applet = applet.Applet
+AID = aid.AID
+APDU = apdu.APDU
+OwnerPIN = ownerpin.OwnerPIN
+
