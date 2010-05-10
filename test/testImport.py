@@ -23,6 +23,11 @@ class testImport(unittest.TestCase):
         except ImportError:
             self.fail("Cannot import pythoncard.framework.OwnerPIN")
 
+        try:
+            from pythoncard.framework import ISO7816
+        except ImportError:
+            self.fail("Cannot import pythoncard.framework.ISO7816")
+
 
     def testCrpto(self):
         try:
