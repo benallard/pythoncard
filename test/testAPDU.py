@@ -20,7 +20,6 @@ class testAPDU(unittest.TestCase):
         apdu.sendBytes(0, 8)
         self.assertEquals(APDU.STATE_FULL_OUTGOING, apdu.getCurrentState())
 
-
     def testBuffer(self):
         apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34])
         buffer = apdu.getBuffer()

@@ -19,10 +19,11 @@ class Applet(object):
         pass
 
     def select(self):
+        self._selectingApplet = True
         return True
 
     def selectingApplet(self):
-        return False
+        return self._selectingApplet
 
     def install(self, bArray, bOffset, bLength):
         pass

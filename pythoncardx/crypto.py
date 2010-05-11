@@ -1,0 +1,2 @@
+class Cipher(object):
+    pass
