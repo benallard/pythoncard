@@ -14,7 +14,7 @@ class testApplet(unittest.TestCase):
         
         self.assertTrue(app.select())
         try:
-            app.process(APDU([00]))
+            app.process(APDU([0,0,0,0]))
         except ISOException, isoe:
             self.assertEquals(0x9000,
                               isoe.getReason())
