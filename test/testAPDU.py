@@ -1,15 +1,25 @@
-import unittest
+import unittest, random
 
 from pythoncard.framework import APDU, ISO7816
 
 class testAPDU(unittest.TestCase):
 
     def testState(self):
-        apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34])
+        apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34, 0x00])
         self.assertEquals(APDU.STATE_INITIAL, apdu.getCurrentState())
         apdu.setIncomingAndReceive()
         self.assertTrue(APDU.STATE_PARTIAL_INCOMING <= apdu.getCurrentState())
-        self.assertEquals(4, apdu.getIncomingLength())
+        apdu.receiveBytes(ISO7816.OFFSET_CDATA)
+        self.assertEquals(APDU.STATE_FULL_INCOMING, apdu.getCurrentState())
+        apdu.setOutgoing()
+        self.assertEquals(APDU.STATE_OUTGOING, apdu.getCurrentState())
+        apdu.setOutgoingLength(10)
+        self.assertEquals(APDU.STATE_OUTGOING_LENGTH_KNOWN, apdu.getCurrentState())
+        apdu.sendBytes(0, 2)
+        self.assertEquals(APDU.STATE_PARTIAL_OUTGOING, apdu.getCurrentState())
+        apdu.sendBytes(0, 8)
+        self.assertEquals(APDU.STATE_FULL_OUTGOING, apdu.getCurrentState())
+
 
     def testBuffer(self):
         apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34])
@@ -28,16 +38,20 @@ class testAPDU(unittest.TestCase):
 
     def testAPDUDoc(self):
         """ This is an adaptation of the piece of code on the APDU page """
-        apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34])
+        apdu = APDU([0x00, 0x20, 0x01, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34, 0x00])
         buffer = apdu.getBuffer()
         cla = buffer[ISO7816.OFFSET_CLA]
+        self.assertEquals(0, cla)
         ins = buffer[ISO7816.OFFSET_INS]
+        self.assertEquals(0x20, ins)
 
         # assume this command has incoming data
         # Lc tells us the incoming apdu command length
         bytesLeft = buffer[ISO7816.OFFSET_LC]
+        self.assertEquals(4, bytesLeft)
 
         readCount = apdu.setIncomingAndReceive()
+        self.assertEquals(9, readCount)
         while  bytesLeft > 0:
             # process bytes in buffer[5] to buffer[readCount+4];
             bytesLeft -= readCount
@@ -54,3 +68,42 @@ class testAPDU(unittest.TestCase):
         # build response data in apdu.buffer[ 0.. outCount-1 ];
         buffer[0] = 1; buffer[1] = 2; buffer[3] = 3
         apdu.sendBytes ( 0 , 3 )
+        self.assertEquals(APDU.STATE_FULL_OUTGOING,
+                          apdu.getCurrentState())
+
+
+        def testExtAPDULength(self):
+            pass
+
+        def testReceiveData(self):
+
+            def receiveData(apdu):
+                buffer = apdu.getBuffer()
+                LC = apdu.getIncomingLength()
+                recvLen = apdu.setIncomingAndReceive()
+                dataOffset = apdu.getOffsetCdata()
+
+                while recvLen > 0:
+                    # process data in buffer[dataOffset]
+                    recvLen = apdu.receiveBytes(dataOffset)
+                # done
+
+            pass
+
+        def testSendData(self):
+
+            def sendData(apdu):
+                buffer = apdu.getBuffer()
+                LE = apdu.setOutgoing()
+                toSend = random.randint(0,65535)
+
+                if LE != toSend:
+                    apdu.setOutgoingLength(toSend)
+
+                while toSend > 0:
+                    # prepare data to send in APDU buffer
+                    apdu.sendBytes(dataOffset, sentLen)
+                    toSend -= sentLen
+                # done
+
+            pass
