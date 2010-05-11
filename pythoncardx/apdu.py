@@ -1,0 +1,2 @@
+class ExtendedLength(object):
+    pass

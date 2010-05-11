@@ -60,7 +60,7 @@ class APDU(object):
         for i in range(4):
             self.buffer[i] = bytesarr[i]
         self._offsetincoming = 4
-        if len(bytesarr) > 4:
+        if len(bytesarr) > 5:
             if bytesarr[4] == 0:
                 self.buffer[4] = bytesarr[4]
                 self.buffer[5] = bytesarr[5]
@@ -84,7 +84,7 @@ class APDU(object):
               ((self.__buffer[4] == 0) and (len(bytesarr) == 7))):
             self.type = 2
             self.Nc = 0
-            (self.Ne, self._lelength) = self.__getInLengths()
+            (self.Ne, self._lelength) = self.__getOutLengths(len(bytesarr))
         elif ((len(bytesarr) == self.__buffer[4] + 5) or
               (len(bytesarr) == self.__getInLengths()[0] + 5)):
             self.type = 3
@@ -94,8 +94,9 @@ class APDU(object):
         else:
             self.type = 4
             (self.Nc, lclength)  = self.__getInLengths()
-            (self.Ne, self._lelength) = self.__getOutLengths(len(bytesarr)-1)
+            (self.Ne, self._lelength) = self.__getOutLengths(len(bytesarr))
             self._cdataoffs += lclength - 1
+        self._outgoinglength = 0
 
 
     def __getInLengths(self):
@@ -108,15 +109,19 @@ class APDU(object):
 
     def __getOutLengths(self, length):
         """ return a tuple (value, length of value) """
+        length -= 1
         if self.__buffer[length] == 0:
             # Lc and Le must have the same format
-            if self.__buffer[ISO7816.OFFSET_CLA] == 0:
-                if self.__buffer[length-1] == 0:
-                    return 65536, 2
-                return 256, 1
+            if length != ISO7816.OFFSET_LC:
+                if self.__buffer[ISO7816.OFFSET_LC] == 0:
+                    if self.__buffer[length-1] == 0:
+                        return 65536, 2
+            return 256, 1
         else:
-            if self.__buffer[ISO7816.OFFSET_CLA] == 0:
-                return self.__buffer[length-1] * 256 + self.__buffer[length], 2
+
+            if length != ISO7816.OFFSET_LC:
+                if self.__buffer[ISO7816.OFFSET_LC] == 0:
+                    return self.__buffer[length-1] * 256 + self.__buffer[length], 2
             return self.__buffer[length], 1
 
 
@@ -171,8 +176,8 @@ class APDU(object):
             raise APDUException(APDUException.ILLEGAL_USE)
         self._state = self.STATE_OUTGOING
         outgoinglength = self._getOutgoingLength()
+        self._curoutgoinglength = 0
         self._outgoinglength = outgoinglength
-        self.__buffer = [0 for i in range(outgoinglength)]
         return outgoinglength
 
     def setoutgoingNoChaining(self):
@@ -184,6 +189,7 @@ class APDU(object):
         if len > self.Ne:
             raise APDUException(APDUException.BAD_LENGTH)
         self._state = self.STATE_OUTGOING_LENGTH_KNOWN
+        self._curoutgoinglength = 0
         self._outgoinglength = len
 
     def sendBytes(self, bOffs, len):
@@ -191,8 +197,9 @@ class APDU(object):
             raise APDUException(APDUException.ILLEGAL_USE)
         if len > OUT_BLOCKSIZE:
             raise APDUException(APDUException.BUFFER_BOUNDS)
-        self._outgoinglength -= len
-        if self._outgoinglength > 0:
+        self.__buffer[self._curoutgoinglength:self._curoutgoinglength+len] = self.buffer[bOffs:bOffs+len]
+        self._curoutgoinglength += len
+        if self._curoutgoinglength < self._outgoinglength:
             self._state = self.STATE_PARTIAL_OUTGOING
         else:
             self._state = self.STATE_FULL_OUTGOING
@@ -231,7 +238,8 @@ class APDU(object):
         pass
 
     def isISOInterindustryCLA(self):
-        pass
+        cla = self.__buffer[ISO7816.OFFSET_CLA]
+        return not bool(cla & 0x80) 
 
     def getIncomingLength(self):
         return self.Nc
