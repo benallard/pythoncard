@@ -36,8 +36,12 @@ class RSAPublicKey(PublicKey):
         self.exponent = []
         for b in buffer[offset:offset+length]:
             self.exponent.append(b)
+        if self.modulus is not None:
+            self._setInitialized()
 
     def setModulus(self, buffer, offset, length):
         self.modulus = []
         for b in buffer[offset:offset+length]:
             self.modulus.append(b)
+        if self.exponent is not None:
+            self._setInitialized()

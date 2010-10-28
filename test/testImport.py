@@ -29,11 +29,11 @@ class testImport(unittest.TestCase):
             self.fail("Cannot import pythoncard.framework.ISO7816")
 
 
-    def testCrpto(self):
+    def testCrypto(self):
         try:
-            from pythoncard.crypto import Cipher
+            from pythoncardx.crypto import Cipher
         except ImportError:
-            self.fail("Cannot import pythoncard.crypto.Cipher")
+            self.fail("Cannot import pythoncardx.crypto.Cipher")
 
     def security(self):
         try:

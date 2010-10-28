@@ -1,11 +1,11 @@
 from pythoncard.framework import CardRuntimeException
 
 class CryptoException(CardRuntimeException):
-    ILLEGAL_USE = 0
     ILLEGAL_VALUE = 1
-    INVALID_INIT = 2
+    UNINITIALIZED_KEY = 2
     NO_SUCH_ALGORITHM = 3
-    UNINITIALIZED_KEY = 4
+    INVALID_INIT = 4
+    ILLEGAL_USE = 5
 
 from pythoncard.security import keypair, key, publickey
 

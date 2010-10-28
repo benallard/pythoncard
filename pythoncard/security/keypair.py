@@ -1,9 +1,11 @@
+from pythoncard.security import CryptoException
+
 class KeyPair(object):
-    ALG_DSA = 0
-    ALG_EC_F2M = 1
-    ALG_EC_FP = 2
-    ALG_RSA = 3
-    ALG_RSA_CRT = 4
+    ALG_DSA = 3
+    ALG_EC_F2M = 4
+    ALG_EC_FP = 5
+    ALG_RSA = 1
+    ALG_RSA_CRT = 2
 
     def __init__(self, param1, param2):
         if isinstance(param1, int):

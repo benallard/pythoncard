@@ -2,6 +2,7 @@ import unittest
 
 from pythoncard.framework import ISOException, ISO7816
 from python.lang import ArrayIndexOutOfBoundsException, IndexOutOfBoundsException
+from pythoncard.security import CryptoException
 
 class testExceptions(unittest.TestCase):
     
@@ -20,3 +21,10 @@ class testExceptions(unittest.TestCase):
             pass
         except:
             self.fail()
+
+    def testCryptoException(self):
+        try:
+            raise CryptoException(CryptoException.UNINITIALIZED_KEY)
+        except CryptoException, ce:
+            self.assertEquals(CryptoException.UNINITIALIZED_KEY,
+                             ce.getReason())
