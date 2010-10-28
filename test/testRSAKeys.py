@@ -44,3 +44,7 @@ class testRSAPublicKey(unittest.TestCase):
         buf = [0 for i in range(20)]
         self.assertEquals(5, pubk.getExponent(buf, 7))
         self.assertEquals([5,6,7,8,9], buf[7:7+5])
+
+    def testInit(self):
+        pubk = RSAPublicKey()
+        self.assertEquals(False, pubk.isInitialized())

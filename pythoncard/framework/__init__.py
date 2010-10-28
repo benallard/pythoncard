@@ -11,6 +11,12 @@ from pythoncard.framework import Applet
 
 """
 
+class CardException(Exception):
+    pass
+
+class UserException(Exception):
+    pass
+
 class CardRuntimeException(Exception):
     def __init__(self, reason):
         self._reason = reason

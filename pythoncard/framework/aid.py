@@ -29,12 +29,15 @@ class AID(object):
         dest[oOffset:oOffset+oLength] = self.aid[aidOffset:aidOfset + oLength]
         return oLength
 
-    def partialEquals(bArray, offset, length):
+    def partialEquals(self, bArray, offset, length):
         if len(self.aid) < length:
             raise ArrayIndexOutOfBoundsException(length)
         if len(bArray) < offset + length:
             raise ArrayIndexOutOfBoundsException(offset + length)
         return self.aid[:length] == bArray[offset:offset + length]
 
-    def RIDEquals(otherAID):
+    def RIDEquals(self, otherAID):
         return self.aid[:5] == otherAID.aid[:5]
+
+    def __eq__(self, other):
+        return self.aid == other.aid

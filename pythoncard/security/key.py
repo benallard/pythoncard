@@ -6,6 +6,9 @@ class Key(object):
     def isInitialized(self):
         return self.initialized
 
+    def _setInitialized(self):
+        self.initialized = True
+
     def clearKey(self):
         pass
     
