@@ -29,6 +29,21 @@ class testCipher(unittest.TestCase):
         pbk.setModulus([7,8,9], 0, 3)
 
         c.init(pbk, Cipher.MODE_ENCRYPT)
-        
-        c.update([], 0, 0, [], 0)
+
+    def GemaltoSample(self):
+        try:
+            rsa = javacardx.crypto.Cipher.getInstance( javacardx.crypto.Cipher.ALG_RSA_NOPAD , False )
+            pubkey = javacard.security.KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_512, False );
+        except javacardx.crypto.CryptoException, e:
+            #... RSA crypto engine not supported by this card
+            pass
+
+        pubkey.setModulus( modulus, 0, modulus_len);
+        pubkey.setExponent( exponent, 0, expo_len);
+
+
+        rsa.init(pubkey, MODE_ENCRYPT);
+
+        rsa.doFinal(buffer2encrypt, 0, 64, output_buffer, 0);
+
         

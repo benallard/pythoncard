@@ -55,4 +55,7 @@ class KeyBuilder(object):
 
     @staticmethod
     def buildKey(self, keyType, keyLength, keyEncryption):
-        pass
+        if keyType == self.TYPE_RSA_PUBLIC:
+            return RSAPublicKey()
+        elif keyType == self.TYPE_RSA_PRIVATE:
+            return RSAPrivateKey()

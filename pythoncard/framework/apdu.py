@@ -117,7 +117,6 @@ class APDU(object):
                         return 65536, 2
             return 256, 1
         else:
-
             if length != ISO7816.OFFSET_LC:
                 if self.__buffer[ISO7816.OFFSET_LC] == 0:
                     return self.__buffer[length-1] * 256 + self.__buffer[length], 2
@@ -154,7 +153,7 @@ class APDU(object):
             self._state = self.STATE_FULL_INCOMING
         else:
             self._state = self.STATE_PARTIAL_INCOMING
-        return self._offsetincoming
+        return tobeprocessed
 
     def receiveBytes(self, bOffs):
         if ((self._state < self.STATE_PARTIAL_INCOMING) or
@@ -194,7 +193,7 @@ class APDU(object):
     def sendBytes(self, bOffs, len):
         if self._state < self.STATE_OUTGOING:
             raise APDUException(APDUException.ILLEGAL_USE)
-        if len > OUT_BLOCKSIZE:
+        if self._curoutgoinglength+len > OUT_BLOCKSIZE:
             raise APDUException(APDUException.BUFFER_BOUNDS)
         self.__buffer[self._curoutgoinglength:self._curoutgoinglength+len] = self.buffer[bOffs:bOffs+len]
         self._curoutgoinglength += len
@@ -204,7 +203,16 @@ class APDU(object):
             self._state = self.STATE_FULL_OUTGOING
 
     def sendBytesLong(self, outData, bOffs, len):
-        pass
+        if self.STATE_PARTIAL_OUTGOING < self._state < self.STATE_OUTGOING_LENGTH_KNOWN:
+            raise APDUException(APDUException.ILLEGAL_USE)
+        if self._curoutgoinglength+len > OUT_BLOCKSIZE:
+            raise APDUException(APDUException.BUFFER_BOUNDS)
+        self.__buffer[self._curoutgoinglength:self._curoutgoinglength+len] = outData[bOffs:bOffs+len]
+        self._curoutgoinglength += len
+        if self._curoutgoinglength < self._outgoinglength:
+            self._state = self.STATE_PARTIAL_OUTGOING
+        else:
+            self._state = self.STATE_FULL_OUTGOING
 
     def setOutgoingAndSend(self, bOffs, len):
         self.setOutgoing()

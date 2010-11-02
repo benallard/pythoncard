@@ -1,4 +1,8 @@
-from pythoncard.security import CryptoException
+from pythoncard.security import CryptoException, RSAPrivateKey, RSAPrivateCrtKey, RSAPublicKey
+
+from pythoncard.security.key import _longToArray
+
+from Crypto.PublicKey import RSA
 
 class KeyPair(object):
     ALG_DSA = 3
@@ -22,7 +26,21 @@ class KeyPair(object):
             self._privateKey = privateKey
 
     def genKeyPair(self):
-        pass
+        if self._publicKey is not None or self._privateKey is not None:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+        if self._algorithm not in [self.ALG_RSA, self.ALG_RSA_CRT]:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+        keypair = RSA.generate(self._keylength)
+        # fill in the public key components
+        self._publicKey = RSAPublicKey()
+        self._publicKey.setTheKey(keypair.publickey())
+        # private key
+        if self._algorithm == self.ALG_RSA:
+            self._privateKey = RSAPrivateKey()
+            self._privateKey.setTheKey(keypair)
+        elif self._algorithm == self.ALG_RSA_CRT:
+            self._privateKey = RSAPrivateCrtKey()
+            self._privateKey.setTheKey(keypair)
 
     def getPrivate(self):
         return self._privateKey

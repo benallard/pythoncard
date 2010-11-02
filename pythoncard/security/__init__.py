@@ -7,10 +7,17 @@ class CryptoException(CardRuntimeException):
     INVALID_INIT = 4
     ILLEGAL_USE = 5
 
-from pythoncard.security import keypair, key, publickey
+from pythoncard.security import key, keybuilder, privatekey, publickey
+
+Key = key.Key
+KeyBuilder = keybuilder.KeyBuilder
+PrivateKey = privatekey.PrivateKey
+PublicKey = publickey.PublicKey
+RSAPrivateCrtKey = privatekey.RSAPrivateCrtKey
+RSAPrivateKey = privatekey.RSAPrivateKey
+RSAPublicKey = publickey.RSAPublicKey
+
+from pythoncard.security import keypair
 
 KeyPair = keypair.KeyPair
-Key = key.Key
-PublicKey = publickey.PublicKey
-RSAPublicKey = publickey.RSAPublicKey
 
