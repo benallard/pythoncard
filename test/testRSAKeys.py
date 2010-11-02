@@ -16,17 +16,18 @@ class testRSAPublicKey(unittest.TestCase):
         pubk = RSAPublicKey()
         try:
             pubk.getExponent([], 0)
-            self.fail()
+            self.fail("Got exponent")
         except CryptoException, ce:
             self.assertEquals(CryptoException.UNINITIALIZED_KEY,
                              ce.getReason())
         try:
             pubk.getModulus([], 0)
-            self.fail()
+            self.fail("Got modulus")
         except CryptoException, ce:
             self.assertEquals(CryptoException.UNINITIALIZED_KEY,
                              ce.getReason())
         pubk.setExponent([], 0, 0)
+        pubk.setModulus([], 0, 0)
         try:
             pubk.getExponent([], 0)
         except CryptoException:
@@ -35,6 +36,7 @@ class testRSAPublicKey(unittest.TestCase):
     def testValue(self):
         pubk = RSAPublicKey()
         pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        pubk.setModulus([], 0,0)
         buf = []
         try:
             self.assertEquals(5, pubk.getExponent([], 7))
@@ -48,3 +50,15 @@ class testRSAPublicKey(unittest.TestCase):
     def testInit(self):
         pubk = RSAPublicKey()
         self.assertEquals(False, pubk.isInitialized())
+        pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        self.assertEquals(False, pubk.isInitialized())
+        pubk.setModulus([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        self.assertEquals(True, pubk.isInitialized())
+
+        pubk = RSAPublicKey()
+        self.assertEquals(False, pubk.isInitialized())
+        pubk.setModulus([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        self.assertEquals(False, pubk.isInitialized())
+        pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        self.assertEquals(True, pubk.isInitialized())
+

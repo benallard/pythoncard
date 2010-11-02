@@ -50,7 +50,7 @@ class testAPDU(unittest.TestCase):
         self.assertEquals(4, bytesLeft)
 
         readCount = apdu.setIncomingAndReceive()
-        self.assertEquals(9, readCount)
+        self.assertEquals(4, readCount)
         while  bytesLeft > 0:
             # process bytes in buffer[5] to buffer[readCount+4];
             bytesLeft -= readCount
@@ -71,38 +71,38 @@ class testAPDU(unittest.TestCase):
                           apdu.getCurrentState())
 
 
-        def testExtAPDULength(self):
-            pass
+    def testExtAPDULength(self):
+        pass
 
-        def testReceiveData(self):
+    def testReceiveData(self):
 
-            def receiveData(apdu):
-                buffer = apdu.getBuffer()
-                LC = apdu.getIncomingLength()
-                recvLen = apdu.setIncomingAndReceive()
-                dataOffset = apdu.getOffsetCdata()
+        def receiveData(apdu):
+            buffer = apdu.getBuffer()
+            LC = apdu.getIncomingLength()
+            recvLen = apdu.setIncomingAndReceive()
+            dataOffset = apdu.getOffsetCdata()
 
-                while recvLen > 0:
-                    # process data in buffer[dataOffset]
-                    recvLen = apdu.receiveBytes(dataOffset)
-                # done
+            while recvLen > 0:
+                # process data in buffer[dataOffset]
+                recvLen = apdu.receiveBytes(dataOffset)
+            # done
 
-            pass
+        pass
 
-        def testSendData(self):
+    def testSendData(self):
 
-            def sendData(apdu):
-                buffer = apdu.getBuffer()
-                LE = apdu.setOutgoing()
-                toSend = random.randint(0,65535)
+        def sendData(apdu):
+            buffer = apdu.getBuffer()
+            LE = apdu.setOutgoing()
+            toSend = random.randint(0,65535)
 
-                if LE != toSend:
-                    apdu.setOutgoingLength(toSend)
+            if LE != toSend:
+                apdu.setOutgoingLength(toSend)
 
-                while toSend > 0:
-                    # prepare data to send in APDU buffer
-                    apdu.sendBytes(dataOffset, sentLen)
-                    toSend -= sentLen
-                # done
+            while toSend > 0:
+                # prepare data to send in APDU buffer
+                apdu.sendBytes(dataOffset, sentLen)
+                toSend -= sentLen
+            # done
 
-            pass
+        pass
