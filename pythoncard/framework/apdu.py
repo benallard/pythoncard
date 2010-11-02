@@ -78,8 +78,7 @@ class APDU(object):
         if len(bytesarr) == 4:
             self.type = 1
             self.Nc = 0
-            self.Ne = 0
-            self._lelength = 0
+            (self.Ne, self._lelength) = (0, 0)
         elif ((len(bytesarr) == 5) or
               ((self.__buffer[4] == 0) and (len(bytesarr) == 7))):
             self.type = 2
@@ -89,7 +88,7 @@ class APDU(object):
               (len(bytesarr) == self.__getInLengths()[0] + 5)):
             self.type = 3
             (self.Nc, lclength) = self.__getInLengths()
-            self.Ne = 0
+            (self.Ne, self._lelength) = (0, 0)
             self._cdataoffs += lclength - 1
         else:
             self.type = 4
