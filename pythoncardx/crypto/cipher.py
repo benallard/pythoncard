@@ -98,13 +98,9 @@ class _RSACipher(Cipher):
     def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
 
-        if self.algorithm == self.ALG_RSA_PKCS1:
-            if self.mode == self.MODE_ENCRYPT:
-                data = self.EME_PKCS1_v1_5_enc(inBuff[inOffset:inOffset+inLength])
-            else:
-                data = inBuff[inOffset:inOffset+inLength]
-        elif self.algorithm == self.ALG_RSA_NOPAD:
-            data = inBuff[inOffset:inOffset+inLength]
+        data = inBuff[inOffset:inOffset+inLength]
+        if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_ENCRYPT):
+            data = self.EME_PKCS1_v1_5_enc(data)
 
         if len(data) != self._theKey.getSize():
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
