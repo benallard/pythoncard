@@ -39,13 +39,10 @@ class Cipher(object):
 
     @staticmethod
     def getInstance(algorithm, shared):
-        return Cipher(algorithm)
+        if algorithm in [Cipher.ALG_RSA_NOPAD, Cipher.ALG_RSA_PKCS1]:
+            return _RSACipher(algorithm)
+        raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
-    def __init__(self, algorithm):
-        if algorithm not in [self.ALG_RSA_NOPAD, self.ALG_RSA_PKCS1]:
-            raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
-        self.algorithm = algorithm
-        self.initialized = False
 
     def init(self, theKey, theMode, bArray = [], bOff = 0, bLen = 0):
         if not isinstance(theKey, Key):
@@ -57,14 +54,6 @@ class Cipher(object):
         self.mode = theMode
 
         #initialise the Crypto something with the IV in parameter
-        
-        if self.algorithm in [self.ALG_RSA_NOPAD, self.ALG_RSA_PKCS1]:
-            if not isinstance(theKey, (RSAPublicKey, RSAPrivateKey,  RSAPrivateCrtKey)):
-                raise CryptoException(CryptoException.ILLEGAL_VALUE)
-
-            self._theKey = theKey
-
-        self.initialized = True
 
     def getAlgorithm(self):
         return self.algorithm
@@ -76,6 +65,26 @@ class Cipher(object):
     def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         if not self.initialized:
             raise CryptoException(CryptoException.INVALID_INIT)
+
+
+class _RSACipher(Cipher):
+
+    def __init__(self, algorithm):
+        self.algorithm = algorithm
+        self.initialized = False
+
+    def init(self, theKey, theMode, bArray = [], bOff = 0, bLen = 0):
+        Cipher.init(self, theKey, theMode, bArray, bOff, bLen)
+
+        if not isinstance(theKey, (RSAPublicKey, RSAPrivateKey,  RSAPrivateCrtKey)):
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+
+        self._theKey = theKey
+        self.initialized = True
+
+    def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
+        Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
+
         if self.algorithm == self.ALG_RSA_PKCS1:
             if self.mode == self.MODE_ENCRYPT:
                 if inLength > self._theKey.getSize() - 11:
@@ -110,4 +119,3 @@ class Cipher(object):
             raise ArrayIndexOutOfBoundException()
 
         return len(buf)
-
