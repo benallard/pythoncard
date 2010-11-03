@@ -83,10 +83,12 @@ class testApplet(unittest.TestCase):
 
         import AppletRSA2048
 
+        tobeencrypted = [0x61, 0x62, 0x63, 0x64]
+
         app = AppletRSA2048.HandsonRSA2048EncryptDecrypt([2, 0x01, 0x02],0,3)
         app._selectingApplet = False
 
-        apdu = APDU([0x00, 0xAA, 0x01, 0x00, 0x04, 0x61, 0x62, 0x63, 0x64, 0xff])
+        apdu = APDU([0x00, 0xAA, 0x01, 0x00] + [len(tobeencrypted)] + tobeencrypted + [0x00])
         app.process(apdu)
         buf = apdu._APDU__buffer[:apdu._outgoinglength]
         self.assertEquals(len(buf), 1024/8)
@@ -94,6 +96,6 @@ class testApplet(unittest.TestCase):
 
         apdu = APDU([0x00, 0xAA, 0x02, 0x00] + [len(buf)-2] + buf[:-2] + [0])
         app.process(apdu)
-
-        print apdu._APDU__buffer[:apdu._outgoinglength]
+        buf = apdu._APDU__buffer[:apdu._outgoinglength]
+        self.assertEquals(tobeencrypted, buf)
 
