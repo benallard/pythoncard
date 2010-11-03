@@ -1,0 +1,29 @@
+import os
+
+from pythoncard.security import CryptoException
+
+class Random(object):
+    ALG_PSEUDO_RANDOM =	1
+    ALG_SECURE_RANDOM = 2
+    
+    @staticmethod
+    def getInstance(algorithm):
+        if algorithm == Random.ALG_SECURE_RANDOM:
+            return _SecureRandom()
+        raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
+
+    def generateData(self, buffer, offset, length):
+        if length == 0:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+        
+    def setSeed(self, buffer, offset, length):
+        pass
+
+class _SecureRandom(Random):
+    def generateData(self, buffer, offset, length):
+        Random.generateData(self, buffer, offset, length)
+        try:
+            for i in range(length):
+                buffer[offset+i] = ord(os.urandom(1))
+        except IndexError:
+            raise ArrayIndexOutOfBoundException()
