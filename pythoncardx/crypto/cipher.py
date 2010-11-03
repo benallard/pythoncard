@@ -6,6 +6,14 @@ from pythoncard.security import CryptoException, Key, RSAPrivateKey, RSAPrivateC
 
 from pythoncard.security.key import _arrayTolong, _longToArray
 
+def zeroFreeRandom(n):
+    out = []
+    while len(out) < n:
+        rdm = ord(os.urandom(1))
+        if rdm != 0:
+            out.append(rdm)
+    return out
+
 class Cipher(object):
     
     ALG_DES_CBC_NOPAD = 1
@@ -72,8 +80,7 @@ class Cipher(object):
             if self.mode == self.MODE_ENCRYPT:
                 if inLength > self._theKey.getSize() - 11:
                     raise CryptoException(CryptoException.ILLEGAL_VALUE)
-                rdm = os.urandom(self._theKey.getSize()-inLength-3)
-                data = [0, 2] + [ord(x) for x in rdm] + [0] + inBuff[inOffset:inOffset+inLength]
+                data = [0, 2] + zeroFreeRandom(self._theKey.getSize()-inLength-3) + [0] + inBuff[inOffset:inOffset+inLength]
             else:
                 data = inBuff[inOffset:inOffset+inLength]
         elif self.algorithm == self.ALG_RSA_NOPAD:
@@ -83,15 +90,18 @@ class Cipher(object):
 
         assert(len(data) == self._theKey.getSize())
 
-        action = {self.MODE_ENCRYPT: self._theKey._theKey.encrypt,
-                  self.MODE_DECRYPT: self._theKey._theKey.decrypt}
-
         if self.mode == self.MODE_ENCRYPT:
             (res, ) = self._theKey._theKey.encrypt(_arrayTolong(data), None)
         else:
             res = self._theKey._theKey.decrypt(_arrayTolong(data))
 
         buf = _longToArray(res)
+
+        # remove padding
+        if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_DECRYPT):
+            if buf[:2] != [0, 2]:
+                raise CryptoException(CryptoException.ILLEGAL_VALUE)
+            buf = buf[buf.index(0,3)+1:]
 
         try:
             for i in range(len(buf)):
