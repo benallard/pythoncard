@@ -28,14 +28,14 @@ class testApplet(unittest.TestCase):
             CHOICE_3 = 42
             
             def process(self, apdu):
-                buffer = apdu.getBuffer()
+
+                if self.selectingApplet():
+                    return
 
                 if apdu.isISOInterindustryCLA():
-                    if self.selectingApplet():
-                        return
-                    else:
-                        ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED)
+                    ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED)
 
+                buffer = apdu.getBuffer()
                 if buffer[ISO7816.OFFSET_INS] == self.CHOICE_1:
                     self.choice1(apdu)
                 elif buffer[ISO7816.OFFSET_INS] == self.CHOICE_2:
@@ -55,8 +55,8 @@ class testApplet(unittest.TestCase):
                 pass
 
         testvec = [
-            ([0, 0x80, 0x00, 0x00],[110, 00]), # INS
-            ([0x80, 0, 0, 0], [109, 0]), # CLA
+            ([0, 0x80, 0x00, 0x00],[0x6E, 0x00]), # INS
+            ([0x80, 0, 0, 0], [0x6D, 0x00]), # CLA
             ([0, 0xa4, 0, 0,],[0x90, 0x00]), # select
             ([0x80, 8, 0, 0, 0], [55, 77, 99, 0x90, 0x00]) # choice1
         ]
@@ -81,11 +81,19 @@ class testApplet(unittest.TestCase):
 
     def testRSA2048Applet(self):
 
-        import AppletRSA2048
+        apps = []
+
+        def myregister(self, bArray, bOffset, bLength):
+            apps.append(self)
+        Applet.register = myregister
 
         tobeencrypted = [0x61, 0x62, 0x63, 0x64]
 
-        app = AppletRSA2048.HandsonRSA2048EncryptDecrypt([2, 0x01, 0x02],0,3)
+        import AppletRSA2048
+        AppletRSA2048.HandsonRSA2048EncryptDecrypt.install([0], 0, 0)
+
+        app = apps[0]
+
         app._selectingApplet = False
 
         apdu = APDU([0x00, 0xAA, 0x01, 0x00] + [len(tobeencrypted)] + tobeencrypted + [0x00])

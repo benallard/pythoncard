@@ -19,20 +19,28 @@ class Applet(object):
         pass
 
     def select(self):
-        self._selectingApplet = True
         return True
 
     def selectingApplet(self):
         return self._selectingApplet
 
-    def install(self, bArray, bOffset, bLength):
-        pass
+    @staticmethod
+    def install(bArray, bOffset, bLength):
+        """
+        To create an instance of the Applet subclass, the Java Card runtime
+        environment will call this static method first.
+        To be implemented by the subclass
+        """
+        raise NotImplementedError()
 
     def process (self, apdu):
-        pass
+        raise NotImplementedError()
 
     def getShareableInterfaceObject(self, client_aid, byte):
-        return None
+        raise NotImplementedError()
 
-    def register(self, bArray=None, bOffset=0, bLength=0):
-        pass
+    def register(self, bArray=[], bOffset=0, bLength=0):
+        """
+        This one is to be implemented by the surrounding system
+        """
+        raise NotImplementedError()
