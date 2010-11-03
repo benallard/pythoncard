@@ -21,7 +21,7 @@ class HandsonRSA2048EncryptDecrypt (Applet):
         self.register(bArray, bOffset + 1, bArray[bOffset]);
 
     @staticmethod
-    def install(self, bArray, bOffset, bLength):
+    def install(bArray, bOffset, bLength):
         HandsonRSA2048EncryptDecrypt(bArray, bOffset, bLength);
 
     def process(self, apdu):

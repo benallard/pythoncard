@@ -246,7 +246,7 @@ class APDU(object):
 
     def isISOInterindustryCLA(self):
         cla = self.__buffer[ISO7816.OFFSET_CLA]
-        return not bool(cla & 0x80) 
+        return (cla & 0x80) == 0x00
 
     def getIncomingLength(self):
         return self.Nc
