@@ -6,16 +6,8 @@ from pythoncard.security import CryptoException, Key, RSAPrivateKey, RSAPrivateC
 
 from pythoncard.security.key import _arrayTolong, _longToArray
 
-def zeroFreeRandom(n):
-    out = []
-    while len(out) < n:
-        rdm = ord(os.urandom(1))
-        if rdm != 0:
-            out.append(rdm)
-    return out
-
 class Cipher(object):
-    
+
     ALG_DES_CBC_NOPAD = 1
     ALG_DES_CBC_ISO9797_M1 = 2
     ALG_DES_CBC_ISO9797_M2 = 3
@@ -82,22 +74,40 @@ class _RSACipher(Cipher):
         self._theKey = theKey
         self.initialized = True
 
+    def EME_PKCS1_v1_5_enc(self, M):
+        """ EME-PKCS1-v1_5 Encoding """
+
+        def zeroFreeRandom(n):
+            out = []
+            while len(out) < n:
+                rdm = ord(os.urandom(1))
+                if rdm != 0:
+                    out.append(rdm)
+            return out
+
+        if len(M) > self._theKey.getSize() - 11:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+        PS = zeroFreeRandom(self._theKey.getSize()-len(M)-3)
+        return [0, 2] + PS + [0] + M
+
+    def EME_PKCS1_v1_5_dec(self, buf):
+        if buf[:2] != [0, 2]:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+        return buf[buf.index(0,3)+1:]
+
     def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
 
         if self.algorithm == self.ALG_RSA_PKCS1:
             if self.mode == self.MODE_ENCRYPT:
-                if inLength > self._theKey.getSize() - 11:
-                    raise CryptoException(CryptoException.ILLEGAL_VALUE)
-                data = [0, 2] + zeroFreeRandom(self._theKey.getSize()-inLength-3) + [0] + inBuff[inOffset:inOffset+inLength]
+                data = self.EME_PKCS1_v1_5_enc(inBuff[inOffset:inOffset+inLength])
             else:
                 data = inBuff[inOffset:inOffset+inLength]
         elif self.algorithm == self.ALG_RSA_NOPAD:
-            if inLength != self._theKey.getSize():
-                raise CryptoException(CryptoException.ILLEGAL_VALUE)
             data = inBuff[inOffset:inOffset+inLength]
 
-        assert(len(data) == self._theKey.getSize())
+        if len(data) != self._theKey.getSize():
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
 
         if self.mode == self.MODE_ENCRYPT:
             (res, ) = self._theKey._theKey.encrypt(_arrayTolong(data), None)
@@ -108,9 +118,7 @@ class _RSACipher(Cipher):
 
         # remove padding
         if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_DECRYPT):
-            if buf[:2] != [0, 2]:
-                raise CryptoException(CryptoException.ILLEGAL_VALUE)
-            buf = buf[buf.index(0,3)+1:]
+            buf = self.EME_PKCS1_v1_5_dec(buf)
 
         try:
             for i in range(len(buf)):

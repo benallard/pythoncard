@@ -19,7 +19,8 @@ def standardGetter(f):
 
 def standardSetter(f):
     """
-    Set the initialized status + also set the internal rep is not already thre
+    Set the initialized status
+    also set the internal rep if not already there
     """
     def setter(self, *args, **kwargs):
         f(self, *args, **kwargs)
