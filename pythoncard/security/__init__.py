@@ -21,3 +21,7 @@ from pythoncard.security import keypair
 
 KeyPair = keypair.KeyPair
 
+from pythoncard.security import signature, random
+
+Signature = signature.Signature
+Random = random.Random
