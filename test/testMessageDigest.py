@@ -24,3 +24,18 @@ class testMessageDigest(unittest.TestCase):
                 md.update(testarray[i], 0, len(testarray[i]))
             md.doFinal(testarray[i], 0, len(testarray[i]), res, 0)
             self.assertEquals(resultarray[i], res)
+
+    def testLengths(self):
+        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, False)
+        self.assertEquals(MessageDigest.ALG_SHA_512, md.getAlgorithm())
+        self.assertEquals(MessageDigest.LENGTH_SHA_512, md.getLength())
+        md = MessageDigest.getInstance(MessageDigest.ALG_MD5, False)
+        self.assertEquals(MessageDigest.LENGTH_MD5, md.getLength())
+        md = MessageDigest.getInstance(MessageDigest.ALG_RIPEMD160, False)
+        self.assertEquals(MessageDigest.LENGTH_RIPEMD160, md.getLength())
+        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_256, False)
+        self.assertEquals(MessageDigest.LENGTH_SHA_256, md.getLength())
+        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_384, False)
+        self.assertEquals(MessageDigest.LENGTH_SHA_384, md.getLength())
+        md = MessageDigest.getInstance(MessageDigest.ALG_SHA, False)
+        self.assertEquals(MessageDigest.LENGTH_SHA, md.getLength())
