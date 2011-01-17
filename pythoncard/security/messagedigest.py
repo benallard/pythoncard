@@ -16,14 +16,11 @@ class MessageDigest(object):
     LENGTH_SHA_384 = 48
     LENGTH_SHA_512 = 64
 
-
     _algorithm = None
 
     @staticmethod
     def getInstance(algorithm, externalaccess):
-        if algorithm == MessageDigest.ALG_SHA:
-            return _SHAMessageDigest()
-        raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
+        return _HashLibMessageDigest(algorithm)
 
     @staticmethod
     def getInitializedMessageDigestInstance(algorithm, externalaccess):
@@ -32,14 +29,20 @@ class MessageDigest(object):
     def getAlgorithm(self):
         return self._algorithm
 
-class _SHAMessageDigest(MessageDigest):
+class _HashLibMessageDigest(MessageDigest):
+    algos = {MessageDigest.ALG_SHA: 'sha1',
+             MessageDigest.ALG_MD5: 'md5',
+             MessageDigest.ALG_RIPEMD160: 'ripemd160',
+             MessageDigest.ALG_SHA_256: 'sha256',
+             MessageDigest.ALG_SHA_384: 'sha384',
+             MessageDigest.ALG_SHA_512: 'sha512'}
     m = None
-    def __init__(self):
-        self._algorithm = MessageDigest.ALG_SHA
-        self.m = hashlib.sha1()
+    def __init__(self, algorithm):
+        self._algorithm = algorithm
+        self.reset()
 
     def reset(self):
-        self.m = hashlib.sha1()
+        self.m = hashlib.new(self.algos[self._algorithm])
 
     def update(self, inBuff, inOffset, inLength):
         self.m.update(''.join(inBuff[inOffset:inOffset+inLength]))
