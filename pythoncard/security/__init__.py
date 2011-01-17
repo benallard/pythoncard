@@ -25,3 +25,7 @@ from pythoncard.security import signature, random
 
 Signature = signature.Signature
 Random = random.Random
+
+from pythoncard.security import messagedigest
+
+MessageDigest = messagedigest.MessageDigest
