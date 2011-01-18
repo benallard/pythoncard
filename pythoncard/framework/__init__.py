@@ -53,3 +53,8 @@ AID = aid.AID
 APDU = apdu.APDU
 OwnerPIN = ownerpin.OwnerPIN
 
+from pythoncard.framework import jcsystem as JCSystem
+
+from pythoncard.framework import util as Util
+
+
