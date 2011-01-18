@@ -47,7 +47,7 @@ def makeShort(b1, b2):
 
 def getShort(bArray, bOff):
     try:
-        return makeShort(barray[bOff], bArray[bOff+1])
+        return makeShort(bArray[bOff], bArray[bOff+1])
     except IndexError:
         raise ArrayIndexOutOfBoundsException()
 

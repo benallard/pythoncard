@@ -2,6 +2,7 @@ import unittest
 import random
 
 from pythoncard.framework import Util
+from python.lang import ArrayIndexOutOfBoundsException
 
 class testUtil(unittest.TestCase):
     
@@ -14,21 +15,25 @@ class testUtil(unittest.TestCase):
         self.assertFalse(Util.arrayCompare(a1, 2, a2, 0, 2))
 
         try:
+            # overflow near the end
+            a1[3] = a2[0]
             Util.arrayCompare(a1, 3, a2, 0, 5)
             self.fail()
-        except ArrayIndexOutOfBoundExeption:
+        except ArrayIndexOutOfBoundsException:
             pass
 
         try:
+            # immediate first array overflow
             Util.arrayCompare(a1, 8, a2, 0, 5)
             self.fail()
-        except ArrayIndexOutOfBoundExeption:
+        except ArrayIndexOutOfBoundsException:
             pass
 
         try:
+            # immediate second array overflow
             Util.arrayCompare(a1, 0, a2, 8, 5)
             self.fail()
-        except ArrayIndexOutOfBoundExeption:
+        except ArrayIndexOutOfBoundsException:
             pass
 
     def testArrayCopy(self):
