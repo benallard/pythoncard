@@ -1,7 +1,5 @@
 import os
 
-from Crypto.PublicKey import RSA
-
 from pythoncard.security import CryptoException, Key, RSAPrivateKey, RSAPrivateCrtKey, RSAPublicKey
 
 from pythoncard.security.key import _arrayTolong, _longToArray
@@ -32,7 +30,7 @@ class Cipher(object):
     @staticmethod
     def getInstance(algorithm, shared):
         if algorithm in [Cipher.ALG_RSA_NOPAD, Cipher.ALG_RSA_PKCS1]:
-            return _RSACipher(algorithm)
+            return _PyCryptoRSACipher(algorithm)
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
 
@@ -58,8 +56,8 @@ class Cipher(object):
         if not self.initialized:
             raise CryptoException(CryptoException.INVALID_INIT)
 
-
-class _RSACipher(Cipher):
+class _PyCryptoRSACipher(Cipher):
+    from Crypto.PublicKey import RSA
 
     def __init__(self, algorithm):
         self.algorithm = algorithm

@@ -1,5 +1,6 @@
-class KeyBuilder(object):
+from pythoncard.security import publickey, privatekey
 
+class KeyBuilder(object):
     LENGTH_AES_128 = 128
     LENGTH_AES_192 = 192
     LENGTH_AES_256 = 256
@@ -56,6 +57,8 @@ class KeyBuilder(object):
     @staticmethod
     def buildKey(self, keyType, keyLength, keyEncryption):
         if keyType == self.TYPE_RSA_PUBLIC:
-            return RSAPublicKey()
+            return publickey.M2RSAPublicKey()
         elif keyType == self.TYPE_RSA_PRIVATE:
-            return RSAPrivateKey()
+            return privatekey.M2RSAPrivateKey()
+        elif keyType == self.TYPE_RSA_CRT_PRIVATE:
+            return privatekey.M2RSAPrivateKey()

@@ -1,17 +1,29 @@
+from pythoncard.framework import Util
 from pythoncard.security import CryptoException
 from pythoncard.security.key import Key, _longToArray
 
 class PrivateKey(Key):
     pass
 
+
+class RSAPrivateKey(PrivateKey):
+    def getExponent(self, buffer, offset):
+        raise NotImplementedError
+    
+    def	getModulus(self, buffer, offset):
+        raise NotImplementedError
+
+    def setExponent(self, buffer, offset, length):
+        raise NotImplementedError
+        
+    def setModulus(self, buffer, offset, length):
+        raise NotImplementedError
+
 def standardGetter(f):
     def getter(self, *args, **kwargs):
         if not self.isInitialized():
             raise CryptoException(CryptoException.UNINITIALIZED_KEY)
-        try:
-            return f(self, *args, **kwargs)
-        except IndexError:
-            raise ArrayIndexOutOfBoundsException()
+        return f(self, *args, **kwargs)
     return getter
 
 def standardSetter(f):
@@ -22,7 +34,7 @@ def standardSetter(f):
             self._setInitialized()
     return setter
 
-class RSAPrivateKey(PrivateKey):
+class PyCryptoRSAPrivateKey(RSAPrivateKey):
     """ This is the same code as for PublicKey """
     def __init__(self):
         PrivateKey.__init__(self)
@@ -31,27 +43,21 @@ class RSAPrivateKey(PrivateKey):
 
     @standardGetter
     def getExponent(self, buffer, offset):
-        for i in range(len(self.exponent)):
-            buffer[offset+i] = self.exponent[i]
+        Util.arrayCopy(self.exponent, 0, buffer, offset, len(self.exponent))
         return len(self.exponent)
 
     @standardGetter
     def getModulus(self, buffer, offset):
-        for i in range(len(self.modulus)):
-            buffer[offset+i] = self.modulus[i]
+        Util.arrayCopy(self.modulus, 0, buffer, offset, len(self.modulus))
         return len(self.modulus)
 
     @standardSetter
     def setExponent(self, buffer, offset, length):
-        self.exponent = []
-        for b in buffer[offset:offset+length]:
-            self.exponent.append(b)
+        self.exponent = buffer[offset:offset+length]
 
     @standardSetter
     def setModulus(self, buffer, offset, length):
-        self.modulus = []
-        for b in buffer[offset:offset+length]:
-            self.modulus.append(b)
+        self.modulus = buffer[offset:offset+length]
 
     @standardSetter
     def setTheKey(self, theKey):
@@ -60,6 +66,9 @@ class RSAPrivateKey(PrivateKey):
         self.modulus = _longToArray(theKey.d)
 
 class RSAPrivateCrtKey(PrivateKey):
+    pass
+
+class PyCryptoRSAPrivateCrtKey(RSAPrivateCrtKey):
     def setTheKey(self, theKey):
         self._theKey = theKey
         self.p = _longToArray(keypair.p)
