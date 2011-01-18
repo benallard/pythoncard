@@ -7,6 +7,9 @@ class PublicKey(Key):
     pass
 
 class RSAPublicKey(PublicKey):
+    def __init__(self, size):
+        PublicKey.__init__(self, 4, size) # TYPE_RSA_PUBLIC
+
     def getExponent(self, buffer, offset):
         raise NotImplementedError
     
@@ -36,14 +39,12 @@ def standardSetter(f):
         if (self.modulus is not None) and (self.exponent is not None):
             if self._theKey is None: #if not aready set, set it
                 self._construct();
-            self.size = len(self.modulus)
             self._setInitialized()
     return setter
 
 class PyCryptoRSAPublicKey(RSAPublicKey):
-    from Crypto.PublicKey import RSA
-    def __init__(self):
-        RSAPublicKey.__init__(self)
+    def __init__(self, size):
+        RSAPublicKey.__init__(self, size)
         self.exponent = None
         self.modulus = None
         self._theKey = None
@@ -64,6 +65,8 @@ class PyCryptoRSAPublicKey(RSAPublicKey):
 
     @standardSetter
     def setModulus(self, buffer, offset, length):
+        if length != (self.getSize() // 8):
+            raise CryptoException(CryptoException.INVALID_INIT)
         self.modulus = buffer[offset:offset+length]
 
     @standardSetter
@@ -73,5 +76,6 @@ class PyCryptoRSAPublicKey(RSAPublicKey):
         self.modulus = _longToArray(theKey.n)
 
     def _construct(self):
+        from Crypto.PublicKey import RSA
         self._theKey = RSA.construct([_arrayTolong(self.modulus),
                                       _arrayTolong(self.exponent)])

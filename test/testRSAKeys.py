@@ -1,19 +1,19 @@
 import unittest
 from python.lang import ArrayIndexOutOfBoundsException
 
-from pythoncard.security import RSAPublicKey, PublicKey, Key, CryptoException
+from pythoncard.security import RSAPublicKey, PublicKey, Key, CryptoException, KeyBuilder
 
 class testRSAPublicKey(unittest.TestCase):
     
     def testinheritance(self):
-        pubk = RSAPublicKey()
+        pubk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         self.assertTrue(isinstance(pubk, RSAPublicKey))
         self.assertTrue(isinstance(pubk, PublicKey))
         self.assertTrue(isinstance(pubk, Key))
 
 
     def testGetters(self):
-        pubk = RSAPublicKey()
+        pubk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         try:
             pubk.getExponent([], 0)
             self.fail("Got exponent")
@@ -27,16 +27,16 @@ class testRSAPublicKey(unittest.TestCase):
             self.assertEquals(CryptoException.UNINITIALIZED_KEY,
                              ce.getReason())
         pubk.setExponent([], 0, 0)
-        pubk.setModulus([], 0, 0)
+        pubk.setModulus([65]*128, 0, 128)
         try:
             pubk.getExponent([], 0)
         except CryptoException:
             self.fail()
 
     def testValue(self):
-        pubk = RSAPublicKey()
+        pubk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
-        pubk.setModulus([], 0,0)
+        pubk.setModulus([65]*128, 0, 128)
         buf = []
         try:
             self.assertEquals(5, pubk.getExponent([], 7))
@@ -48,16 +48,16 @@ class testRSAPublicKey(unittest.TestCase):
         self.assertEquals([5,6,7,8,9], buf[7:7+5])
 
     def testInit(self):
-        pubk = RSAPublicKey()
+        pubk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         self.assertEquals(False, pubk.isInitialized())
         pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
         self.assertEquals(False, pubk.isInitialized())
-        pubk.setModulus([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        pubk.setModulus([0,0,0,0,0]+[0,1,2,3,4,5,6,7]*16, 5, 128)
         self.assertEquals(True, pubk.isInitialized())
 
-        pubk = RSAPublicKey()
+        pubk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         self.assertEquals(False, pubk.isInitialized())
-        pubk.setModulus([0,1,2,3,4,5,6,7,8,9], 5, 5)
+        pubk.setModulus([0,0,0,0,0]+[0,1,2,3,4,5,6,7]*16, 5, 128)
         self.assertEquals(False, pubk.isInitialized())
         pubk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
         self.assertEquals(True, pubk.isInitialized())

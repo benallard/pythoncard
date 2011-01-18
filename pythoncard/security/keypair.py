@@ -1,5 +1,5 @@
 from pythoncard.security import CryptoException, RSAPrivateKey, RSAPrivateCrtKey, RSAPublicKey
-from pythoncard.security import publickey, privatekey
+from pythoncard.security import KeyBuilder
 
 from pythoncard.security.key import _longToArray
 
@@ -13,10 +13,8 @@ class KeyPair(object):
 
     def __init__(self, param1, param2):
         if isinstance(param1, int):
-            algorithm = param1
-            keylength = param2
-            self._algorithm = algorithm
-            self._keylength = keylength
+            self._algorithm = param1
+            self._keylength = param2
             self._publicKey = None
             self._privateKey = None
         else:
@@ -33,14 +31,14 @@ class KeyPair(object):
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
         keypair = RSA.generate(self._keylength)
         # fill in the public key components
-        self._publicKey = publickey.PyCryptoRSAPublicKey()
+        self._publicKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, self._keylength, False)
         self._publicKey.setTheKey(keypair.publickey())
         # private key
         if self._algorithm == self.ALG_RSA:
-            self._privateKey = privatekey.PyCryptoRSAPrivateKey()
+            self._privateKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PRIVATE, self._keylength, False)
             self._privateKey.setTheKey(keypair)
         elif self._algorithm == self.ALG_RSA_CRT:
-            self._privateKey = privatekey.PyCryptoRSAPrivateCrtKey()
+            self._privateKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_CRT_PRIVATE, self._keylength, False)
             self._privateKey.setTheKey(keypair)
 
     def genKeyPair(self):

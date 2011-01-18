@@ -7,6 +7,9 @@ class PrivateKey(Key):
 
 
 class RSAPrivateKey(PrivateKey):
+    def __init__(self, size):
+        PrivateKey.__init__(self, 5, size)
+
     def getExponent(self, buffer, offset):
         raise NotImplementedError
     
@@ -30,14 +33,13 @@ def standardSetter(f):
     def setter(self, *args, **kwargs):
         f(self, *args, **kwargs)
         if (self.modulus is not None) and (self.exponent is not None):
-            self.size = len(self.modulus)
             self._setInitialized()
     return setter
 
 class PyCryptoRSAPrivateKey(RSAPrivateKey):
     """ This is the same code as for PublicKey """
-    def __init__(self):
-        PrivateKey.__init__(self)
+    def __init__(self, size):
+        RSAPrivateKey.__init__(self, size)
         self.exponent = None
         self.modulus = None
 
@@ -57,6 +59,8 @@ class PyCryptoRSAPrivateKey(RSAPrivateKey):
 
     @standardSetter
     def setModulus(self, buffer, offset, length):
+        if length != (self.size // 8):
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
         self.modulus = buffer[offset:offset+length]
 
     @standardSetter
@@ -66,9 +70,43 @@ class PyCryptoRSAPrivateKey(RSAPrivateKey):
         self.modulus = _longToArray(theKey.d)
 
 class RSAPrivateCrtKey(PrivateKey):
-    pass
+    def __init__(self, size):
+        PrivateKey.__init__(self, 6, size)
+
+    def getDP1(buffer, offset):
+        raise NotImplementedError
+
+    def getDQ1(buffer, offset):
+        raise NotImplementedError
+
+    def getP(buffer, offset):
+        raise NotImplementedError
+
+    def getPQ(buffer, offset):
+        raise NotImplementedError
+
+    def getQ(buffer, offset):
+        raise NotImplementedError
+
+    def setDP1(buffer, offset, length):
+        raise NotImplementedError
+
+    def setDQ1(buffer, offset, length):
+        raise NotImplementedError
+
+    def setP(buffer, offset, length):
+        raise NotImplementedError
+
+    def setPQ(buffer, offset, length):
+        raise NotImplementedError
+
+    def setQ(buffer, offset, length):
+        raise NotImplementedError
 
 class PyCryptoRSAPrivateCrtKey(RSAPrivateCrtKey):
+    def __init__(self, size):
+        RSAPrivateKey.__init__(self, size)
+
     def setTheKey(self, theKey):
         self._theKey = theKey
         self.p = _longToArray(keypair.p)

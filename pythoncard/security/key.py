@@ -30,9 +30,10 @@ def _arrayTolong(bytes):
 
 class Key(object):
 
-    def __init__(self):
+    def __init__(self, typ, size):
         self.initialized = False
-        self.size = 0
+        self.size = size
+        self.type = typ
 
     def isInitialized(self):
         return self.initialized
@@ -44,9 +45,7 @@ class Key(object):
         pass
     
     def getType(self):
-        pass
+        return self.type
 
     def getSize(self):
-        if not self.initialized:
-            raise CryptoException(CryptoException.INVALID_INIT)
         return self.size

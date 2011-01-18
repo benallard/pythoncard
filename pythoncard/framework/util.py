@@ -21,7 +21,7 @@ def arrayCopy(src, srcOff, dest, destOff, length):
             dest[destOff+i] = src[srcOff+i]
     except IndexError:
         JCSystem.abortTransaction()
-        raise ArrayIndexoutOfBoundsException()
+        raise ArrayIndexOutOfBoundsException()
     except: # be exception safe ...
         JCSystem.abortTransaction()
         raise

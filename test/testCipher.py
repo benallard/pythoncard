@@ -1,6 +1,6 @@
 import unittest
 from pythoncardx.crypto import Cipher
-from pythoncard.security import CryptoException, RSAPublicKey
+from pythoncard.security import CryptoException, RSAPublicKey, KeyBuilder, KeyPair
 
 class testCipher(unittest.TestCase):
 
@@ -18,7 +18,7 @@ class testCipher(unittest.TestCase):
         except CryptoException, ce:
             self.assertEquals(CryptoException.ILLEGAL_VALUE, ce.getReason())
 
-        pbk = RSAPublicKey()
+        pbk = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, False)
         try:
             c.init(pbk, Cipher.MODE_ENCRYPT)
             self.fail()
@@ -26,9 +26,28 @@ class testCipher(unittest.TestCase):
             self.assertEquals(CryptoException.UNINITIALIZED_KEY, ce.getReason())
 
         pbk.setExponent([0,1,2,3,4,5,6,7,8,9], 5, 5)
-        pbk.setModulus([7,8,9], 0, 3)
+        pbk.setModulus([7]*128, 0, 128) # 1024 // 8
 
         c.init(pbk, Cipher.MODE_ENCRYPT)
+
+    def testRSAEncryptDecrypt(self):
+        kp = KeyPair(KeyPair.ALG_RSA, KeyBuilder.LENGTH_RSA_1024)
+        kp.genKeyPair()
+        pubk = kp.getPublic()
+        self.assertEquals(1024, pubk.getSize())
+        privk = kp.getPrivate()
+        self.assertEquals(1024, privk.getSize())
+
+        c = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, False)
+        c.init(pubk, Cipher.MODE_ENCRYPT)
+        res = [0]*1024
+        l = c.doFinal([0,1,2,3,4,5], 0, 6, res, 0)
+
+        c.init(privk, Cipher.MODE_DECRYPT)
+        res2 = [0]*1024
+        l = c.doFinal(res, 0, l, res2, 0)
+
+        self.assertEquals([0,1,2,3,4,5], res2[:l])
 
     def GemaltoSample(self):
         try:

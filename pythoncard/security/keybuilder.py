@@ -55,10 +55,10 @@ class KeyBuilder(object):
     TYPE_RSA_PUBLIC = 4
 
     @staticmethod
-    def buildKey(self, keyType, keyLength, keyEncryption):
-        if keyType == self.TYPE_RSA_PUBLIC:
-            return publickey.M2RSAPublicKey()
-        elif keyType == self.TYPE_RSA_PRIVATE:
-            return privatekey.M2RSAPrivateKey()
-        elif keyType == self.TYPE_RSA_CRT_PRIVATE:
-            return privatekey.M2RSAPrivateKey()
+    def buildKey(keyType, keyLength, keyEncryption):
+        if keyType == KeyBuilder.TYPE_RSA_PUBLIC:
+            return publickey.PyCryptoRSAPublicKey(keyLength)
+        elif keyType == KeyBuilder.TYPE_RSA_PRIVATE:
+            return privatekey.PyCryptoRSAPrivateKey(keyLength)
+        elif keyType == KeyBuilder.TYPE_RSA_CRT_PRIVATE:
+            return privatekey.PyCryptoRSAPrivateKey(keyLength)

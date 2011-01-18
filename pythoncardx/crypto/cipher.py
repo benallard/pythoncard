@@ -1,5 +1,7 @@
 import os
 
+from pythoncard.framework import Util
+
 from pythoncard.security import CryptoException, Key, RSAPrivateKey, RSAPrivateCrtKey, RSAPublicKey
 
 from pythoncard.security.key import _arrayTolong, _longToArray
@@ -33,6 +35,9 @@ class Cipher(object):
             return _PyCryptoRSACipher(algorithm)
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
+    def __init__(self, algorithm):
+        self.algorithm = algorithm
+        self.initialized = False
 
     def init(self, theKey, theMode, bArray = [], bOff = 0, bLen = 0):
         if not isinstance(theKey, Key):
@@ -60,8 +65,7 @@ class _PyCryptoRSACipher(Cipher):
     from Crypto.PublicKey import RSA
 
     def __init__(self, algorithm):
-        self.algorithm = algorithm
-        self.initialized = False
+        Cipher.__init__(self, algorithm)
 
     def init(self, theKey, theMode, bArray = [], bOff = 0, bLen = 0):
         Cipher.init(self, theKey, theMode, bArray, bOff, bLen)
@@ -83,9 +87,9 @@ class _PyCryptoRSACipher(Cipher):
                     out.append(rdm)
             return out
 
-        if len(M) > self._theKey.getSize() - 11:
+        if len(M) > (self._theKey.getSize() // 8) - 11:
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
-        PS = zeroFreeRandom(self._theKey.getSize()-len(M)-3)
+        PS = zeroFreeRandom((self._theKey.getSize() // 8)-len(M)-3)
         return [0, 2] + PS + [0] + M
 
     def EME_PKCS1_v1_5_dec(self, buf):
@@ -100,7 +104,7 @@ class _PyCryptoRSACipher(Cipher):
         if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_ENCRYPT):
             data = self.EME_PKCS1_v1_5_enc(data)
 
-        if len(data) != self._theKey.getSize():
+        if len(data) != (self._theKey.getSize() // 8):
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
 
         if self.mode == self.MODE_ENCRYPT:
@@ -114,10 +118,6 @@ class _PyCryptoRSACipher(Cipher):
         if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_DECRYPT):
             buf = self.EME_PKCS1_v1_5_dec(buf)
 
-        try:
-            for i in range(len(buf)):
-                outBuff[outOffset+i] = buf[i]
-        except IndexError:
-            raise ArrayIndexOutOfBoundException()
+        Util.arrayCopy(buf, 0, outBuff, outOffset, len(buf))
 
         return len(buf)
