@@ -1,3 +1,5 @@
+import warnings
+
 class Applet(object):
 
     def __init__(self):
@@ -43,4 +45,4 @@ class Applet(object):
         """
         This one is to be implemented by the surrounding system
         """
-        raise NotImplementedError()
+        warnings.warn("Applet.register should be implemented by the underlying system", RuntimeWarning)
