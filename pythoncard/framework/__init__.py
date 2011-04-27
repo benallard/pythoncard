@@ -46,6 +46,21 @@ class APDUException(CardRuntimeException):
     NO_T0_REISSUE = 5
     T1_IFD_ABORT = 6
 
+class SystemException(CardRuntimeException):
+    ILLEGAL_AID	= 4
+    ILLEGAL_TRANSIENT = 3
+    ILLEGAL_USE = 6
+    ILLEGAL_VALUE = 1
+    NO_RESOURCE = 5
+    NO_TRANSIENT_SPACE = 2
+
+class TransactionException(CardRuntimeException):
+    BUFFER_FULL = 3
+    IN_PROGRESS = 1
+    INTERNAL_FAILURE = 4
+    NOT_IN_PROGRESS = 2
+
+
 from pythoncard.framework import applet, aid, apdu, ownerpin
 
 Applet = applet.Applet
