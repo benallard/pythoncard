@@ -3,3 +3,9 @@ class IndexOutOfBoundsException(Exception):
 
 class ArrayIndexOutOfBoundsException(IndexOutOfBoundsException):
     pass
+
+class RuntimeException(Exception):
+    pass
+
+class SecurityException(RuntimeException):
+    pass
