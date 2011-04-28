@@ -1,3 +1,6 @@
+class Object(object):
+    pass
+
 class IndexOutOfBoundsException(Exception):
     pass
 
@@ -8,4 +11,7 @@ class RuntimeException(Exception):
     pass
 
 class SecurityException(RuntimeException):
+    pass
+
+class NullPointerException(RuntimeException):
     pass
