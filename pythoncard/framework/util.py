@@ -43,7 +43,7 @@ def arrayFillNonAtomic(bArray, bOff, bLen, bValue):
         raise ArrayIndexOutOfBoundsException()
 
 def makeShort(b1, b2):
-    return b1 * 256 + b2
+    return ((b1 & 0xff) << 8) + (b2 & 0xff)
 
 def getShort(bArray, bOff):
     try:
