@@ -46,6 +46,10 @@ class testUtil(unittest.TestCase):
     def testShort(self):
         a = [0,0,0,0]
         for i in range(3):
-            s = random.randint(0, 0xFFFF)
+            s1 = random.randint(-128, 127)
+            s2 = random.randint(-128, 127)
+            s = Util.makeShort(s1, s2)
             Util.setShort(a, 1, s)
+            self.assertEquals(s1 & 0xff, a[1])
+            self.assertEquals(s2 & 0xff, a[2])
             self.assertEquals(s, Util.getShort(a, 1))
