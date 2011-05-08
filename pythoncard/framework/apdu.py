@@ -25,6 +25,9 @@ OUT_BLOCKSIZE = 0x80
 
 from pythoncard.framework import APDUException, ISO7816
 
+# there can only be one (1) APDU at a time ...
+_current = None
+
 class APDU(object):
     """
     The APDU Object
@@ -70,7 +73,8 @@ class APDU(object):
                 self.buffer[4] = bytesarr[4]
                 self._offsetincoming += 1
 
-
+        global _current
+        _current = self
         self._state = self.STATE_INITIAL
 
         # determine the APDU type
@@ -136,7 +140,7 @@ class APDU(object):
 
     @staticmethod
     def getProtocol():
-        pass
+        return (APDU.PROTOCOL_MEDIA_DEFAULT << 4) | APDU.PROTOCOL_T1
 
     def getNAD(self):
         pass
@@ -224,22 +228,23 @@ class APDU(object):
 
     @staticmethod
     def getCurrentAPDU():
-        pass
+        return _current
 
     @staticmethod
     def getCurrentAPDUBuffer():
-        pass
+        return _current.getBuffer()
 
     @staticmethod
     def getCLAChannel():
-        pass
+        return _current.getBuffer()[ISO7816.OFFSET_CLA] & 0x3
 
     @staticmethod
     def waitExtension():
         pass
 
     def isCommandChainingCLA(self):
-        pass
+        cla = self.__buffer[ISO7816.OFFSET_CLA]
+        return bool(cla & 0x10)
 
     def isSecureMessagingCLA(self):
         pass
