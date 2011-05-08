@@ -15,6 +15,11 @@ def makeTransientShortArray(length, event):
 
 makeTransientByteArray = makeTransientShortArray
 
+def makeTransientBooleanArray(length, event):
+    warnings.warn("Array is not transient")
+    return [False for i in xrange(length)]
+    
+
 def makeTransientObjectArray(length, event):
     warnings.warn("Array is not transient")
     return [None for i in xrange(length)]
