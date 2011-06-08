@@ -33,6 +33,12 @@ class Cipher(object):
     def getInstance(algorithm, shared):
         if algorithm in [Cipher.ALG_RSA_NOPAD, Cipher.ALG_RSA_PKCS1]:
             return _PyCryptoRSACipher(algorithm)
+        elif algorithm in [Cipher.ALG_DES_ECB_NOPAD, 
+                           Cipher.ALG_DES_ECB_PKCS5,
+                           Cipher.ALG_DES_CBC_NOPAD, 
+                           Cipher.ALG_DES_CBC_PKCS5]:
+            return _PyCryptoDESCipher(algorithm)
+        print "algorithm not known: %d" % algorithm
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
     def __init__(self, algorithm):
@@ -121,3 +127,8 @@ class _PyCryptoRSACipher(Cipher):
         Util.arrayCopy(buf, 0, outBuff, outOffset, len(buf))
 
         return len(buf)
+
+class _PyCryptoDESCipher(Cipher):
+
+    def __init__(self, algorithm):
+        Cipher.__init__(self, algorithm)

@@ -24,3 +24,5 @@ def makeTransientObjectArray(length, event):
     warnings.warn("Array is not transient")
     return [None for i in xrange(length)]
 
+def requestObjectDeletion():
+    pass
