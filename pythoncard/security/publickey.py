@@ -3,6 +3,11 @@ from pythoncard.framework import Util
 from pythoncard.security import CryptoException
 from pythoncard.security.key import Key, _longToArray, _arrayTolong
 
+try:
+    from Crypto.PublicKey import RSA as pyCryptoRSA
+except ImportError:
+    pyCryptoRSA = None
+
 class PublicKey(Key):
     pass
 
@@ -76,6 +81,7 @@ class PyCryptoRSAPublicKey(RSAPublicKey):
         self.modulus = _longToArray(theKey.n)
 
     def _construct(self):
-        from Crypto.PublicKey import RSA
-        self._theKey = RSA.construct([_arrayTolong(self.modulus),
+        if pyCryptoRSA is None:
+            raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
+        self._theKey = pyCryptoRSA.construct([_arrayTolong(self.modulus),
                                       _arrayTolong(self.exponent)])
