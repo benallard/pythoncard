@@ -3,6 +3,10 @@ from pythoncard.security import KeyBuilder
 
 from pythoncard.security.key import _longToArray
 
+try:
+    from Crypto.PublicKey import RSA as pyCryptoRSA
+except ImportError:
+    pyCryptoRSA = None
 
 class KeyPair(object):
     ALG_DSA = 3
@@ -26,10 +30,11 @@ class KeyPair(object):
             self._privateKey = param2
 
     def _pyCryptogenKeyPair(self):
-        from Crypto.PublicKey import RSA
+        if pyCryptoRSA is None:
+            raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
         if self._algorithm not in [self.ALG_RSA, self.ALG_RSA_CRT]:
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
-        keypair = RSA.generate(self._keylength)
+        keypair = pyCryptoRSA.generate(self._keylength)
         # fill in the public key components
         self._publicKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, self._keylength, False)
         self._publicKey.setTheKey(keypair.publickey())
