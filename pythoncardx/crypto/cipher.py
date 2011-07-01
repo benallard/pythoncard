@@ -2,7 +2,8 @@ import os
 
 from pythoncard.framework import Util
 
-from pythoncard.security import CryptoException, Key, RSAPrivateKey, RSAPrivateCrtKey, RSAPublicKey
+from pythoncard.security import CryptoException, Key, RSAPrivateKey, \
+     RSAPrivateCrtKey, RSAPublicKey
 
 from pythoncard.security.key import _arrayTolong, _longToArray
 
@@ -68,7 +69,6 @@ class Cipher(object):
             raise CryptoException(CryptoException.INVALID_INIT)
 
 class _PyCryptoRSACipher(Cipher):
-    from Crypto.PublicKey import RSA
 
     def __init__(self, algorithm):
         Cipher.__init__(self, algorithm)
@@ -106,8 +106,10 @@ class _PyCryptoRSACipher(Cipher):
     def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
 
-        data = inBuff[inOffset:inOffset+inLength]
-        if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_ENCRYPT):
+        data = [0 for i in xrange(inLength)]
+        Util.arrayCopy(inBuff, inOffset, data, 0, inLength)
+        if ((self.algorithm == self.ALG_RSA_PKCS1) and
+            (self.mode == self.MODE_ENCRYPT)):
             data = self.EME_PKCS1_v1_5_enc(data)
 
         if len(data) != (self._theKey.getSize() // 8):
@@ -121,7 +123,8 @@ class _PyCryptoRSACipher(Cipher):
         buf = _longToArray(res)
 
         # remove padding
-        if (self.algorithm == self.ALG_RSA_PKCS1) and (self.mode == self.MODE_DECRYPT):
+        if ((self.algorithm == self.ALG_RSA_PKCS1) and
+            (self.mode == self.MODE_DECRYPT)):
             buf = self.EME_PKCS1_v1_5_dec(buf)
 
         Util.arrayCopy(buf, 0, outBuff, outOffset, len(buf))
