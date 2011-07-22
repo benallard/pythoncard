@@ -28,6 +28,12 @@ def _arrayTolong(bytes):
         l += bytes[i]
     return l
 
+def _binaryToarray(bytes):
+    return [ord(c) for c in bytes]
+
+def _arrayTobinary(array):
+    return ''.join([chr(i & 0xff) for i in array])
+
 class Key(object):
 
     def __init__(self, typ, size):

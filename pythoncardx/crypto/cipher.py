@@ -5,7 +5,15 @@ from pythoncard.framework import Util
 from pythoncard.security import CryptoException, Key, RSAPrivateKey, \
      RSAPrivateCrtKey, RSAPublicKey
 
-from pythoncard.security.key import _arrayTolong, _longToArray
+from pythoncard.security.secretkey import pyDesDESKey
+
+from pythoncard.security.key import _arrayTolong, _longToArray, \
+     _arrayTobinary, _binaryToarray
+
+try:
+    from pyDes import pyDes
+except Importerror:
+    pyDes = None
 
 class Cipher(object):
 
@@ -38,7 +46,7 @@ class Cipher(object):
                            Cipher.ALG_DES_ECB_PKCS5,
                            Cipher.ALG_DES_CBC_NOPAD, 
                            Cipher.ALG_DES_CBC_PKCS5]:
-            return _PyCryptoDESCipher(algorithm)
+            return _pyDesDESCipher(algorithm)
         print "algorithm not known: %d" % algorithm
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
@@ -131,7 +139,68 @@ class _PyCryptoRSACipher(Cipher):
 
         return len(buf)
 
-class _PyCryptoDESCipher(Cipher):
+class _pyDesDESCipher(Cipher):
 
     def __init__(self, algorithm):
+        if pyDes is None:
+            # shouldn't happen as it is included in pythoncard
+            raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
         Cipher.__init__(self, algorithm)
+        self.desmode = {Cipher.ALG_DES_ECB_NOPAD: pyDes.ECB,
+                        Cipher.ALG_DES_ECB_ISO9797_M1: pyDes.ECB,
+                        Cipher.ALG_DES_ECB_ISO9797_M2: pyDes.ECB,
+                        Cipher.ALG_DES_ECB_PKCS5: pyDes.ECB,
+                        Cipher.ALG_DES_CBC_NOPAD: pyDes.CBC,
+                        Cipher.ALG_DES_CBC_ISO9797_M1: pyDes.CBC,
+                        Cipher.ALG_DES_CBC_ISO9797_M2: pyDes.CBC,
+                        Cipher.ALG_DES_CBC_PKCS5: pyDes.CBC}[algorithm]
+        self.padmode = {Cipher.ALG_DES_ECB_NOPAD: pyDes.PAD_NORMAL,
+                        Cipher.ALG_DES_ECB_ISO9797_M1: None,
+                        Cipher.ALG_DES_ECB_ISO9797_M2: None,
+                        Cipher.ALG_DES_ECB_PKCS5: pyDes.PAD_PKCS5,
+                        Cipher.ALG_DES_CBC_NOPAD: pyDes.PAD_NORMAL,
+                        Cipher.ALG_DES_CBC_ISO9797_M1: None,
+                        Cipher.ALG_DES_CBC_ISO9797_M2: None,
+                        Cipher.ALG_DES_CBC_PKCS5: pyDes.PAD_PKCS5}[algorithm]
+
+    def init(self, theKey, theMode, bArray = [0,0,0,0,0,0,0,0], bOff = 0, bLen = 8):
+        Cipher.init(self, theKey, theMode, bArray, bOff, bLen)
+
+        if not isinstance(theKey, pyDesDESKey):
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+
+        if bLen != 8:
+            raise CryptoException(CryptoException.ILLEGAL_VALUE)
+
+        iv = [0 for i in xrange(8)]
+        Util.arrayCopy(bArray, bOff, iv, 0, bLen)
+
+        iv = _arrayTobinary(iv)
+
+        if 64 == theKey.getSize():
+            # DES
+            self._cipher = pyDes.des(theKey._key, self.desmode, iv,
+                                     padmode = self.padmode)
+        else:
+            #3DES
+            self._cipher = pyDes.triple_des(theKey._key, self.desmode, iv,
+                                            padmode = self.padmode)
+
+        self.initialized = True
+
+    def  doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
+        Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
+
+        data = [0 for i in xrange(inLength)]
+        Util.arrayCopy(inBuff, inOffset, data, 0, inLength)
+        data = _arrayTobinary(data)
+
+        if self.mode == Cipher.MODE_ENCRYPT:
+            result = self._cipher.encrypt(data)
+        else:
+            result = self._cipher.decrypt(data)
+
+        result = _binaryToarray(result)
+        Util.arrayCopy(result, 0, outBuff, outOffset, len(result))
+
+        return len(result)
