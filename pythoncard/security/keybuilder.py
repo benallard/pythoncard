@@ -1,4 +1,4 @@
-from pythoncard.security import publickey, privatekey
+from pythoncard.security import publickey, privatekey, secretkey
 
 class KeyBuilder(object):
     LENGTH_AES_128 = 128
@@ -62,3 +62,7 @@ class KeyBuilder(object):
             return privatekey.PyCryptoRSAPrivateKey(keyLength)
         elif keyType == KeyBuilder.TYPE_RSA_CRT_PRIVATE:
             return privatekey.PyCryptoRSAPrivateKey(keyLength)
+        elif keyType in [KeyBuilder.TYPE_DES,
+                         KeyBuilder.TYPE_DES_TRANSIENT_DESELECT,
+                         KeyBuilder.TYPE_DES_TRANSIENT_RESET]:
+            return secretkey.pyDesDESKey(keyType, keyLength)

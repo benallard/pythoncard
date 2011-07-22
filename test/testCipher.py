@@ -65,4 +65,19 @@ class testCipher(unittest.TestCase):
 
         rsa.doFinal(buffer2encrypt, 0, 64, output_buffer, 0);
 
-        
+    def testDES(self):
+
+        KeyArray = [1,2,3,4,5,6,7,8]
+        bytBuffer = [0 for i in xrange(8)]
+        MyBuffer = [7,5,6,8]
+
+        MyDesKey = KeyBuilder.buildKey(KeyBuilder.TYPE_DES, KeyBuilder.LENGTH_DES, False)
+        crypt_des = Cipher.getInstance(Cipher.ALG_DES_ECB_PKCS5, False)
+
+        MyDesKey.setKey(KeyArray, 0);
+        crypt_des.init(MyDesKey, Cipher.MODE_ENCRYPT);
+        length = crypt_des.doFinal(MyBuffer, 0, len(MyBuffer), bytBuffer, 0)
+        crypt_des.init(MyDesKey, Cipher.MODE_DECRYPT);
+        crypt_des.doFinal(bytBuffer, 0, length, MyBuffer, 0)
+
+        self.assertEquals([7,5,6,8], MyBuffer)
