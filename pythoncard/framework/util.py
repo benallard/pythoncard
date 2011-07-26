@@ -44,10 +44,7 @@ def arrayFillNonAtomic(bArray, bOff, bLen, bValue):
 
 def makeShort(b1, b2):
     """ a short is signed ... """
-    rawval = ((b1 << 8) & 0xFF00) | (b2 & 0xFF)
-    if rawval >= 0x8000:
-        rawval = -(~(rawval-1) & 0xffff)
-    return rawval
+    return _signed2(((b1 << 8) & 0xFF00) | (b2 & 0xFF))
 
 def getShort(bArray, bOff):
     try:
@@ -56,10 +53,28 @@ def getShort(bArray, bOff):
         raise ArrayIndexOutOfBoundsException()
 
 def setShort(bArray, bOff, sValue):
-    b1 = (sValue & 0xFF00) >> 8
-    b2 = sValue & 0xFF
+    b1 = _signed1((sValue & 0xFF00) >> 8)
+    b2 = _signed1(sValue & 0xFF)
     try:
         bArray[bOff] = b1
         bArray[bOff + 1] = b2
     except IndexError:
         raise ArrayIndexOutOfBoundsException()
+
+# Taken from CAPRunner
+
+def _signed(value, depth):
+    """
+    return the signed value of the number on the specified depth
+    """
+    mask = (1 << (depth*8)) - 1
+    if value > ((1 << (depth*8)-1) - 1):
+        return -(~(value-1) & mask)
+    else:
+        return value
+
+def _signed1(value):
+    return _signed(value, 1)
+
+def _signed2(value):
+    return _signed(value, 2)
