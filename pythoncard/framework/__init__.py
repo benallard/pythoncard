@@ -62,6 +62,7 @@ class TransactionException(CardRuntimeException):
     INTERNAL_FAILURE = 4
     NOT_IN_PROGRESS = 2
 
+class Shareable: pass
 
 from pythoncard.framework import applet, aid, apdu, ownerpin
 
