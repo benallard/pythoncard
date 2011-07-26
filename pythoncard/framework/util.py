@@ -43,7 +43,11 @@ def arrayFillNonAtomic(bArray, bOff, bLen, bValue):
         raise ArrayIndexOutOfBoundsException()
 
 def makeShort(b1, b2):
-    return ((b1 << 8) & 0xFF00) | (b2 & 0xFF)
+    """ a short is signed ... """
+    rawval = ((b1 << 8) & 0xFF00) | (b2 & 0xFF)
+    if rawval >= 0x8000:
+        rawval = -(~(rawval-1) & 0xffff)
+    return rawval
 
 def getShort(bArray, bOff):
     try:
