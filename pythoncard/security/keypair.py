@@ -37,7 +37,7 @@ class KeyPair(object):
         keypair = pyCryptoRSA.generate(self._keylength)
         # fill in the public key components
         self._publicKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, self._keylength, False)
-        self._publicKey.setTheKey(keypair.publickey())
+        self._publicKey.setTheKey(keypair)
         # private key
         if self._algorithm == self.ALG_RSA:
             self._privateKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PRIVATE, self._keylength, False)
