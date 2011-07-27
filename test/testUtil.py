@@ -10,9 +10,11 @@ class testUtil(unittest.TestCase):
         a1 = [1,2,3,4]
         a2 = [0,1,2,3,4]
 
-        self.assertTrue(Util.arrayCompare(a1, 0, a2, 1, 4))
+        self.assertEqual(0, Util.arrayCompare(a1, 0, a2, 1, 4))
 
-        self.assertFalse(Util.arrayCompare(a1, 2, a2, 0, 2))
+        self.assertEqual(1, Util.arrayCompare(a1, 2, a2, 0, 2))
+
+        self.assertEqual(-1, Util.arrayCompare(a2, 0, a1, 2, 2))
 
         try:
             # overflow near the end

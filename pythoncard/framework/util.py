@@ -6,13 +6,15 @@ from python.lang import ArrayIndexOutOfBoundsException
 from pythoncard.framework import JCSystem
 
 def arrayCompare(src, srcOff, dest, destOff, length):
-    res = True
     try:
         for i in range(length):
-            res = res and (src[srcOff+i] == dest[destOff+i])
+            if src[srcOff+i] > dest[destOff+i]:
+                return 1
+            elif src[srcOff+i] < dest[destOff+i]:
+                return -1
     except IndexError:
         raise ArrayIndexOutOfBoundsException()
-    return res
+    return 0
     
 def arrayCopy(src, srcOff, dest, destOff, length):
     JCSystem.beginTransaction()
