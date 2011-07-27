@@ -49,6 +49,25 @@ class testCipher(unittest.TestCase):
 
         self.assertEquals([0,1,2,3,4,5], res2[:l])
 
+    def testRSASignVerify(self):
+        kp = KeyPair(KeyPair.ALG_RSA, KeyBuilder.LENGTH_RSA_1024)
+        kp.genKeyPair()
+        pubk = kp.getPublic()
+        self.assertEquals(1024, pubk.getSize())
+        privk = kp.getPrivate()
+        self.assertEquals(1024, privk.getSize())
+
+        c = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, False)
+        c.init(privk, Cipher.MODE_ENCRYPT)
+        res = [0]*1024
+        l = c.doFinal([0,1,2,3,4,5], 0, 6, res, 0)
+
+        c.init(pubk, Cipher.MODE_DECRYPT)
+        res2 = [0]*1024
+        l = c.doFinal(res, 0, l, res2, 0)
+
+        self.assertEquals([0,1,2,3,4,5], res2[:l])
+
     def GemaltoSample(self):
         try:
             rsa = javacardx.crypto.Cipher.getInstance( javacardx.crypto.Cipher.ALG_RSA_NOPAD , False )
