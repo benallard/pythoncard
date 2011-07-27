@@ -63,15 +63,15 @@ class APDU(object):
         for i in range(4):
             self.buffer[i] = bytesarr[i]
         self._offsetincoming = 4
-        if len(bytesarr) > 5:
-            if bytesarr[4] == 0:
-                self.buffer[4] = bytesarr[4]
-                self.buffer[5] = bytesarr[5]
-                self.buffer[6] = bytesarr[6]
-                self._offsetincoming += 3
-            else:
-                self.buffer[4] = bytesarr[4]
-                self._offsetincoming += 1
+        if len(bytesarr) > 4:
+            # there is a P3
+            P3len = 1
+            if (bytesarr[ISO7816.OFFSET_LC] == 0) and (len(bytesarr) > 5):
+                # P3 is extended
+                P3len = 3
+            for i in xrange(ISO7816.OFFSET_LC, ISO7816.OFFSET_LC + P3len):
+                self.buffer[i] = bytesarr[i]
+            self._offsetincoming += P3len
 
         global _current
         _current = self
