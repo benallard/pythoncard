@@ -78,11 +78,14 @@ class APDU(object):
         self._state = self.STATE_INITIAL
 
         # determine the APDU type
+        # Just for the fun, it's not used anywhere else
         self._cdataoffs = ISO7816.OFFSET_CDATA
         if len(bytesarr) == 4:
             self.type = 1
             self.Nc = 0
-            (self.Ne, self._lelength) = (0, 0)
+            # Set Ne to None: Jan said Length is optionnal, so we might
+            # actually have a type 2 APDU ...
+            (self.Ne, self._lelength) = (None, 0)
         elif ((len(bytesarr) == 5) or
               ((self.__buffer[4] == 0) and (len(bytesarr) == 7))):
             self.type = 2
@@ -92,7 +95,8 @@ class APDU(object):
               (len(bytesarr) == self.__getInLengths()[0] + 5)):
             self.type = 3
             (self.Nc, lclength) = self.__getInLengths()
-            (self.Ne, self._lelength) = (0, 0)
+            # same joke about Ne (see type 1)
+            (self.Ne, self._lelength) = (None, 0)
             self._cdataoffs += lclength - 1
         else:
             self.type = 4
@@ -188,7 +192,7 @@ class APDU(object):
     def setOutgoingLength(self, len):
         if self._state < self.STATE_OUTGOING:
             raise APDUException(APDUException.ILLEGAL_USE)
-        if len > self.Ne:
+        if (self.Ne is not None) and (len > self.Ne):
             raise APDUException(APDUException.BAD_LENGTH)
         self._state = self.STATE_OUTGOING_LENGTH_KNOWN
         self._curoutgoinglength = 0
@@ -257,7 +261,8 @@ class APDU(object):
         return self.Nc
 
     def _getOutgoingLength(self):
-        return self.Ne
+        # To prevent troubles with a None value of Ne
+        return self.Ne or 0
 
     def getOffsetCdata(self):
         return self._cdataoffs
