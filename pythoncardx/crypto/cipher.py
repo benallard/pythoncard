@@ -12,7 +12,7 @@ from pythoncard.security.key import _arrayTolong, _longToArray, \
 
 try:
     from pyDes import pyDes
-except Importerror:
+except ImportError:
     pyDes = None
 
 class Cipher(object):
