@@ -11,13 +11,15 @@ from pythoncard.framework import Applet
 
 """
 
+from python.lang import RuntimeException
+
 class CardException(Exception):
     pass
 
-class UserException(Exception):
+class UserException(CardException):
     pass
 
-class CardRuntimeException(Exception):
+class CardRuntimeException(RuntimeException):
     def __init__(self, reason):
         self._reason = reason
 
@@ -60,6 +62,7 @@ class TransactionException(CardRuntimeException):
     INTERNAL_FAILURE = 4
     NOT_IN_PROGRESS = 2
 
+class Shareable: pass
 
 from pythoncard.framework import applet, aid, apdu, ownerpin
 
