@@ -16,5 +16,8 @@ class SecurityException(RuntimeException):
 class NullPointerException(RuntimeException):
     pass
 
+class ArithmeticException(RuntimeException):
+    pass
+
 class ClassCastException(RuntimeException):
     pass
