@@ -26,3 +26,7 @@ def makeTransientObjectArray(length, event):
 
 def requestObjectDeletion():
     pass
+
+def getAvailableMemory(memoryType):
+    """ return the max we can return """
+    return 0x7fff

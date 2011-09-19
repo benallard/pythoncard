@@ -6,13 +6,15 @@ from python.lang import ArrayIndexOutOfBoundsException
 from pythoncard.framework import JCSystem
 
 def arrayCompare(src, srcOff, dest, destOff, length):
-    res = True
     try:
         for i in range(length):
-            res = res and (src[srcOff+i] == dest[destOff+i])
+            if src[srcOff+i] > dest[destOff+i]:
+                return 1
+            elif src[srcOff+i] < dest[destOff+i]:
+                return -1
     except IndexError:
         raise ArrayIndexOutOfBoundsException()
-    return res
+    return 0
     
 def arrayCopy(src, srcOff, dest, destOff, length):
     JCSystem.beginTransaction()
@@ -43,7 +45,8 @@ def arrayFillNonAtomic(bArray, bOff, bLen, bValue):
         raise ArrayIndexOutOfBoundsException()
 
 def makeShort(b1, b2):
-    return ((b1 << 8) & 0xFF00) | (b2 & 0xFF)
+    """ a short is signed ... """
+    return _signed2(((b1 << 8) & 0xFF00) | (b2 & 0xFF))
 
 def getShort(bArray, bOff):
     try:
@@ -52,10 +55,28 @@ def getShort(bArray, bOff):
         raise ArrayIndexOutOfBoundsException()
 
 def setShort(bArray, bOff, sValue):
-    b1 = (sValue & 0xFF00) >> 8
-    b2 = sValue & 0xFF
+    b1 = _signed1((sValue & 0xFF00) >> 8)
+    b2 = _signed1(sValue & 0xFF)
     try:
         bArray[bOff] = b1
         bArray[bOff + 1] = b2
     except IndexError:
         raise ArrayIndexOutOfBoundsException()
+
+# Taken from CAPRunner
+
+def _signed(value, depth):
+    """
+    return the signed value of the number on the specified depth
+    """
+    mask = (1 << (depth*8)) - 1
+    if value > ((1 << (depth*8)-1) - 1):
+        return -(~(value-1) & mask)
+    else:
+        return value
+
+def _signed1(value):
+    return _signed(value, 1)
+
+def _signed2(value):
+    return _signed(value, 2)

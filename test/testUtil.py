@@ -10,9 +10,11 @@ class testUtil(unittest.TestCase):
         a1 = [1,2,3,4]
         a2 = [0,1,2,3,4]
 
-        self.assertTrue(Util.arrayCompare(a1, 0, a2, 1, 4))
+        self.assertEqual(0, Util.arrayCompare(a1, 0, a2, 1, 4))
 
-        self.assertFalse(Util.arrayCompare(a1, 2, a2, 0, 2))
+        self.assertEqual(1, Util.arrayCompare(a1, 2, a2, 0, 2))
+
+        self.assertEqual(-1, Util.arrayCompare(a2, 0, a1, 2, 2))
 
         try:
             # overflow near the end
@@ -45,11 +47,11 @@ class testUtil(unittest.TestCase):
 
     def testShort(self):
         a = [0,0,0,0]
-        for i in range(3):
+        for i in range(30):
             s1 = random.randint(-128, 127)
             s2 = random.randint(-128, 127)
             s = Util.makeShort(s1, s2)
             Util.setShort(a, 1, s)
-            self.assertEquals(s1 & 0xff, a[1])
-            self.assertEquals(s2 & 0xff, a[2])
+            self.assertEquals(s1, a[1])
+            self.assertEquals(s2, a[2])
             self.assertEquals(s, Util.getShort(a, 1))
