@@ -1,4 +1,4 @@
-from javacard.framework import CardRuntimeException
+from pythoncard.framework import CardRuntimeException
 
 class TLVException(CardRuntimeException):
     EMPTY_TAG = 0
@@ -13,6 +13,8 @@ class TLVException(CardRuntimeException):
     TLV_LENGTH_GREATER_THAN_32767 = 9
     TLV_SIZE_GREATER_THAN_32767 = 10
 
-from pythoncard.framework.tlv import bertag
+from pythoncardx.framework.tlv import bertag
 
 BERTag = bertag.BERTag
+PrimitiveBERTag = bertag.PrimitiveBERTag
+ConstructedBERTag = bertag.ConstructedBERTag
