@@ -1,6 +1,14 @@
 from pythoncardx.framework.tlv import TLVException
 
 class toBytes(object):
+    """ This make the toBytes function both static and not static
+    credits goes there (in decreasing order of importance).
+    http://users.rcn.com/python/download/Descriptor.htm
+    and there:
+    http://stackoverflow.com/questions/114214/class-method-differences-in-python-bound-unbound-and-static/114289#114289
+    and here:
+    http://code.activestate.com/recipes/52304-static-methods-aka-class-methods-in-python/
+    """
     def __get__(self, obj, objtype=None):
         if obj is not None:
             return obj._toBytesBound
