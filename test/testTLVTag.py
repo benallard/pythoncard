@@ -2,7 +2,7 @@ import unittest
 
 from pythoncardx.framework.tlv import BERTag, PrimitiveBERTag, ConstructedBERTag
 
-class BERTagTest(unittest.TestCase):
+class StaticTest(unittest.TestCase):
 
     def testtoBytes(self):
         array = [0 for i in xrange(10)]
@@ -13,3 +13,14 @@ class BERTagTest(unittest.TestCase):
         self.assertEquals(0x5f, array[0])
         self.assertEquals(0xff, array[1])
         self.assertEquals(0x7f, array[2])
+
+        self.assertEquals(2, BERTag,toBytes())
+
+class BERTagTest(unittest.TestCase):
+
+    def testConstrInit(self):
+        tag = ConstructedBERTag()
+        tag.init(3, 1)
+        self.assertEquals(3, tag._tagClass)
+        self.assertEquals(1, tag._PC)
+        self.assertEquals(1, tag._tagNumber)
