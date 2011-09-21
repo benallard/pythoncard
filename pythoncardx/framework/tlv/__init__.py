@@ -18,3 +18,9 @@ from pythoncardx.framework.tlv import bertag
 BERTag = bertag.BERTag
 PrimitiveBERTag = bertag.PrimitiveBERTag
 ConstructedBERTag = bertag.ConstructedBERTag
+
+from pythoncardx.framework.tlv import bertlv
+
+BERTLV = bertlv.BERTLV
+PrimitiveBERTLV = bertlv.PrimitiveBERTLV
+ConstructedBERTLV = bertlv.ConstructedBERTLV

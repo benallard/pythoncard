@@ -1,7 +1,12 @@
+"""
+Credits have to be given there:
+http://code.activestate.com/recipes/577244-simple-ber-decoding-in-python/
+"""
+
 from pythoncardx.framework.tlv import TLVException
 
-class toBytes(object):
-    """ This make the toBytes function both static and not static
+class NotAlwaysStatic(object):
+    """ This makes a function both static and not static
     credits goes there (in decreasing order of importance).
     http://users.rcn.com/python/download/Descriptor.htm
     and there:
@@ -9,11 +14,15 @@ class toBytes(object):
     and here:
     http://code.activestate.com/recipes/52304-static-methods-aka-class-methods-in-python/
     """
+    def __init__(self, boundname, staticname):
+        self.boundname = boundname
+        self.staticname = staticname
+
     def __get__(self, obj, objtype=None):
         if obj is not None:
-            return obj._toBytesBound
+            return getattr(obj, self.boundname)
         else:
-            return BERTag._toBytesStatic
+            return getattr(objtype, self.staticname)
 
 class BERTag(object):
     BER_TAG_CLASS_MASK_APPLICATION = 0
@@ -26,20 +35,34 @@ class BERTag(object):
     def __init__(self):
         self._tagClass = 0
         self._tagNumber = 0
+        self._size = 0
+
+    @staticmethod
+    def getInstance(bArray, bOff):
+        if (bArray[bOff] >> 5) & 0x1:
+            tag = ConstructedBERTag()
+        else:
+            tag = PrimitiveBERTag()
+        tag.init(bArray, bOff)
+        return tag
 
     def init(self, bArray, bOff):
+        """ supposedly abstract """
         self._tagClass = bArray[bOff] >> 6
+        self._PC = (bArray[bOff] >> 5) & 0x1
         if (bArray[bOff] & 0x1f) == 0x1f:
             self._tagNumber = 0
-            bOff += 1
-            while (bArray[bOff] & 0x80) == 0x80:
+            bLen = 1
+            while (bArray[bOff+bLen] & 0x80) == 0x80:
                 self._tagNumber = self._tagNumber << 7
-                self._tagNumber += bArray[bOff] & 0x7f
-                bOff += 1
+                self._tagNumber += bArray[bOff+bLen] & 0x7f
+                bLen += 1
             self._tagNumber = self._tagNumber << 7
-            self._tagNumber += bArray[bOff] & 0x7f
+            self._tagNumber += bArray[bOff+bLen] & 0x7f
+            self._size = bLen
         else:
             self._tagNumber = bArray[bOff] & 0x1f
+            self._size = 1
 
     def _toBytesBound(self, outBuf, bOffset):
         outBuf[bOffset] = self._tagClass << 6
@@ -62,15 +85,24 @@ class BERTag(object):
             #clear the high bit on the last part
             outBuf[bOffset+bLen-1] &= 0x7f
             return bLen
-
     @staticmethod
     def _toBytesStatic(tagClass, isConstructed, tagNumber, outArray, bOff):
         tag = {True: ConstructedBERTag,
                False: PrimitiveBERTag}[isConstructed]()
         tag.init(tagClass, tagNumber)
         return tag.toBytes(outArray, bOff)
+    toBytes = NotAlwaysStatic('_toBytesBound', '_toBytesStatic')
 
-    toBytes = toBytes()
+    def _sizeBound(self):
+        return self._size
+
+    @staticmethod
+    def _sizeStatic(berTagArray, bOff):
+        tag = BERTag()
+        tag.init(berTagArray, bOff)
+        return tag.size()
+    size = NotAlwaysStatic('_sizeBound', '_sizeStatic')
+
 
 class PrimitiveBERTag(BERTag):
     def __init__(self):
