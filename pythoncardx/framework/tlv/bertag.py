@@ -37,7 +37,7 @@ class BERTag(object):
 
     def init(self, bArray, bOff):
         """ supposedly abstract """
-        self._tagClass = bArray[bOff] >> 6
+        self._tagClass = (bArray[bOff] & 0xff) >> 6
         self._tagConstr = bool(bArray[bOff] & 0x20)
         if (bArray[bOff] & 0x1f) == 0x1f:
             self._tagNumber = 0
@@ -86,13 +86,36 @@ class BERTag(object):
 
     def _sizeBound(self):
         return self._size
-
     @staticmethod
     def _sizeStatic(berTagArray, bOff):
         tag = BERTag()
         tag.init(berTagArray, bOff)
         return tag.size()
     size = NotAlwaysStatic('_sizeBound', '_sizeStatic')
+
+    def _isConstructedBound(self):
+        return self._tagConstr
+    @staticmethod
+    def _isConstructedStatic(berTagArray, bOff):
+        tag = BERTag.getInstance(berTagArray, bOff)
+        return tag.isConstructed()
+    isConstructed = NotAlwaysStatic('_isConstructedBound', '_isConstructedStatic')
+
+    def _tagClassBound(self):
+        return self._tagClass
+    @staticmethod
+    def _tagClassStatic(berTagArray, bOff):
+        tag = BERTag.getInstance(berTagArray, bOff)
+        return tag.tagClass()
+    tagClass = NotAlwaysStatic('_tagClassBound', '_tagClassStatic')
+
+    def _tagNumberBound(self):
+        return self._tagNumber
+    @staticmethod
+    def _tagNumberStatic(berTagArray, bOff):
+        tag = BERTag.getInstance(berTagArray, bOff)
+        return tag.tagNumber()
+    tagNumber = NotAlwaysStatic('_tagNumberBound', '_tagNumberStatic')
 
     def __str__(self):
         return '<BERTag: %d%s, %d>' % (self._tagClass, self._tagConstr and ', CONSTR' or '', self._tagNumber)
@@ -137,4 +160,4 @@ class ConstructedBERTag(BERTag):
         else:
             self._tagClass = param1
             self._tagNumber = param2
-    
+
