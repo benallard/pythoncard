@@ -66,7 +66,7 @@ class APDU(object):
         if len(bytesarr) > 4:
             # there is a P3
             P3len = 1
-            if (bytesarr[ISO7816.OFFSET_LC] == 0) and (len(bytesarr) > 5):
+            if (bytesarr[ISO7816.OFFSET_LC] == 0) and (len(bytesarr) > ISO7816.OFFSET_LC + 3):
                 # P3 is extended
                 P3len = 3
             for i in xrange(ISO7816.OFFSET_LC, ISO7816.OFFSET_LC + P3len):
