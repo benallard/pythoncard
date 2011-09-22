@@ -48,7 +48,6 @@ class JCint(object):
     def setInt(bArray, bOff, iValue1, iValue2):
         # ints are transmited as two params ...
         iVal = JCint.makeInt(iValue1, iValue2)
-        print bArray, bOff, iVal
         bArray[bOff] = (iVal >> 24) & 0xff
         bArray[bOff + 1] = iVal >> 16 & 0xff
         bArray[bOff + 2] = iVal >> 8 & 0xff
