@@ -23,15 +23,25 @@ def _getLength(bArray):
     else:
         return (1, bArray[0])
 
+def getLengthLen(length):
+    """ how much btes are needed to write 'length' """
+    if length > 127:
+        return (length // 127) + 1
+    else:
+        return 1
+
 class BERTLV(object):
     def __init__(self):
         self._tag = None
         self._length = 0
         self._value = None
-        self._size = 0
 
     @staticmethod
-    def getInstance(bArray, bOff, bLen):
+    def getInstance(bArray, bOff, bLen = None):
+        if bLen is None:
+            # This is a trick of mine, the JC framework will anyway always
+            # call it will three arguments  
+            bLen = BERTLV.getLength(bArray, bOff)
         tag = BERTag.getInstance(bArray, bOff)
         if tag._tagConstr:
             tlv = ConstructedBERTLV(0)
@@ -39,6 +49,7 @@ class BERTLV(object):
             tlv = PrimitiveBERTLV(0)
         bOff += tag.size()
         l, length = _getLength(bArray[bOff:])
+        # this calls the init method of the child class, not BERTLV
         tlv.init(tag, bArray, bOff + l, bLen - tag.size() - l)
         return tlv
 
@@ -61,7 +72,7 @@ class BERTLV(object):
     getLength = NotAlwaysStatic('_getLengthBound', '_getLengthStatic')
 
     def size(self):
-        return self._size
+        return self._tag.size() + getLengthLen(self._length) + self._length
 
     def _toBytesBound(self, outBuf, bOff):
         bLen = self._tag.toBytes(outBuf, bOff)
@@ -109,10 +120,12 @@ class ConstructedBERTLV(BERTLV):
         return self.size()
     @staticmethod
     def _appendStatic(berTLVInArray, bTLVInOff, berTLVOutArray, bTLVOutOff):
-        # that's a funny one, actually, it is a CopyArrayAtomic (or not)
-        # but just with the length parameter missing ...
-        length = BERTLV.getLength(berTLVInArray, bTLVInOff)
-        Util.arrayCopy(berTLVInArray, bTLVInOff, berTLVOutArray, bTLVOutOff, length)
+        """ append a piece to the value of the out TLV, making it even more
+        constructed """
+        intlv = BERTLV.getInstance(berTLVInArray, bTLVInOff)
+        outtlv = BERTLV.getInstance(berTLVOutArray, bTLVOutOff)
+        outtlv.append(intlv)
+        return outtlv.toBytes(berTLVOutArray, bTLVOutOff)
     append = NotAlwaysStatic('_appendBound', '_appendStatic')
 
 
