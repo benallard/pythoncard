@@ -43,7 +43,7 @@ class BERTLV(object):
             # call it will three arguments  
             bLen = BERTLV.getLength(bArray, bOff)
         tag = BERTag.getInstance(bArray, bOff)
-        if tag._tagConstr:
+        if tag.isConstructed():
             tlv = ConstructedBERTLV(0)
         else:
             tlv = PrimitiveBERTLV(0)
@@ -128,6 +128,32 @@ class ConstructedBERTLV(BERTLV):
         return outtlv.toBytes(berTLVOutArray, bTLVOutOff)
     append = NotAlwaysStatic('_appendBound', '_appendStatic')
 
+    def _find(self, tag, offset=0):
+        """ returns the offset of the found tag """
+        while offset < self._length:
+            tlv = BERTLV.getInstance(self._value, offset)
+            if tlv.getTag() == tag:
+                return offset
+            offset += tlv.size()
+        return -1
+
+    def _findBound(self, tag):
+        if tag is None:
+            # return the first one
+            return BERTLV.getInstance(self._value, 0)
+        offset = self._find(tag)
+        if offset == -1:
+            return None
+        return BERTLV.getInstance(self._value, offset)
+    @staticmethod
+    def _findStatic(berTLVArray, bTLVOff, berTagArray, bTagOff):
+        tlv = BERTLV.getInstance(berTLVArray, bTLVOff)
+        firstOff = bTLVOff + tlv.getTag().size() + getLengthLen(tlv.getLength())
+        if berTagArray is None:
+            # return the first one
+            return firstOff
+        return firstOff + tlv._find(BERTag.getInstance(berTagArray, bTagOff))
+    find = NotAlwaysStatic('_findBound', '_findStatic')
 
 class PrimitiveBERTLV(BERTLV):
     def __init__(self, numValueBytes):
@@ -145,3 +171,8 @@ class PrimitiveBERTLV(BERTLV):
             bArray = param1
             (bOff, bLen) = args
             return BERTLV.init(self, bArray, bOff, bLen)
+
+    @staticmethod
+    def getValueOffset(berTLVArray, bTLVOff):
+        tlv = BERTLV.getInstance(berTLVArray, bTLVOff)
+        return bTLVOff + tlv.getTag().size() + getLengthLen(tlv.getLength())
