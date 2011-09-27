@@ -1,3 +1,18 @@
+
+def signed(value, depth):
+    """
+    return the signed value of the number on the specified depth
+    """
+    mask = (1 << (depth*8)) - 1
+    if value > ((1 << (depth*8)-1) - 1):
+        return -(~(value-1) & mask)
+    else:
+        return value
+
+def s1(value):
+    return signed(value, 1)
+
+
 class NotAlwaysStatic(object):
     """ This makes a function both static and not static
     credits goes there (in decreasing order of importance).

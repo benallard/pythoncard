@@ -5,6 +5,8 @@ http://code.activestate.com/recipes/577244-simple-ber-decoding-in-python/
 
 from pythoncard.utils import NotAlwaysStatic
 
+from python.lang import ArrayIndexOutOfBoundsException
+
 def sanitycheck(array):
     mask = (1 << 8) - 1
     for i in range(len(array)):
@@ -28,11 +30,14 @@ class BERTag(object):
 
     @staticmethod
     def getInstance(bArray, bOff):
-        if (bArray[bOff] >> 5) & 0x1:
-            tag = ConstructedBERTag()
-        else:
-            tag = PrimitiveBERTag()
-        tag.init(bArray, bOff)
+        try:
+            if (bArray[bOff] >> 5) & 0x1:
+                tag = ConstructedBERTag()
+            else:
+                tag = PrimitiveBERTag()
+            tag.init(bArray, bOff)
+        except IndexError:
+            raise ArrayIndexOutOfBoundsException
         return tag
 
     def init(self, bArray, bOff):

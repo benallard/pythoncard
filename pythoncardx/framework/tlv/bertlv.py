@@ -139,8 +139,11 @@ class ConstructedBERTLV(BERTLV):
 
     def _findBound(self, tag):
         if tag is None:
-            # return the first one
-            return BERTLV.getInstance(self._value, 0)
+            if self._length > 0:
+                # return the first one
+                return BERTLV.getInstance(self._value, 0)
+            else:
+                return None
         offset = self._find(tag)
         if offset == -1:
             return None
@@ -150,10 +153,53 @@ class ConstructedBERTLV(BERTLV):
         tlv = BERTLV.getInstance(berTLVArray, bTLVOff)
         firstOff = bTLVOff + tlv.getTag().size() + getLengthLen(tlv.getLength())
         if berTagArray is None:
-            # return the first one
-            return firstOff
-        return firstOff + tlv._find(BERTag.getInstance(berTagArray, bTagOff))
+            if tlv.getLength() > 0:
+                # return the first one
+                return firstOff
+            else:
+                return -1
+        offset = tlv._find(BERTag.getInstance(berTagArray, bTagOff))
+        if offset == -1:
+            return -1
+        return firstOff + offset
     find = NotAlwaysStatic('_findBound', '_findStatic')
+
+    def _findNextBound(self, tag, aTLV, occurrenceNum):
+        tlvtag = aTLV.getTag()
+        i = 0
+        offset = 0
+        while i < occurrenceNum:
+            offset = self._find(tlvtag, offset)
+            if offset == -1:
+                return None
+            tlv = BERTLV.getInstance(self._value, offset)
+            offset += tlv.size()
+            if tlv._value == aTLV._value:
+                i += 1
+        if tag is None:
+            return BERTLV.getInstance(self._value, offset)
+        res = self._find(tag, offset)
+        if res == -1:
+            return None
+        return BERTLV.getInstance(self._value, res)
+    def _findNextStatic(berTLVArray, bTLVOff, startOffset, berTagArray, bTagOff):
+        tlv = BERTLV.getInstance(berTLVArray, bTLVOff)
+        firstOff = bTLVOff + tlv.getTag().size() + getLengthLen(tlv.getLength())
+        # startOffset dos not has to be right on it ...
+        correctStartOff = 0
+        while firstOff + correctStartOff < startOffset:
+            correctStartOff = tlv._find(None, correctStartOff)
+            if correctStartOff == -1:
+                return -1
+        startOffset = correctStartOff
+        nextOff = tlv._find(None, startOff)
+        if berTagArray is None:
+            return firstOff + nextOff
+        offset = tlv._find(BERTag.getInstance(berTagArray, bTagOff), nextOff)
+        if offset == -1:
+            return -1
+        return firstOff + offset
+    findNext = NotAlwaysStatic('_findNextBound', '_findNextStatic')
 
 class PrimitiveBERTLV(BERTLV):
     def __init__(self, numValueBytes):
@@ -176,3 +222,12 @@ class PrimitiveBERTLV(BERTLV):
     def getValueOffset(berTLVArray, bTLVOff):
         tlv = BERTLV.getInstance(berTLVArray, bTLVOff)
         return bTLVOff + tlv.getTag().size() + getLengthLen(tlv.getLength())
+
+    def getValue(self, tlvValue, tOff):
+        Util.arrayCopy(self._value, 0, tlvValue, tOff, self._length)
+        return self._length
+
+    def replaceValue(self, vArray, vOff, vLen):
+        self._value = [0 for i in range(vLen)]
+        Util.arrayCopy(vArray, vOff, self._value, 0, vLen)
+        self._length = vLen
