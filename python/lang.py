@@ -1,5 +1,6 @@
 class Object(object):
-    pass
+    def equals(self, obj):
+        return self is obj
 
 class IndexOutOfBoundsException(Exception):
     pass
