@@ -34,19 +34,72 @@ class Cipher(object):
     ALG_RSA_PKCS1_OAEP = 15
     ALG_KOREAN_SEED_ECB_NOPAD = 16
     ALG_KOREAN_SEED_CBC_NOPAD = 17
+    ALG_AES_BLOCK_192_CBC_NOPAD = 18
+    ALG_AES_BLOCK_192_ECB_NOPAD = 19
+    ALG_AES_BLOCK_256_CBC_NOPAD = 20
+    ALG_AES_BLOCK_256_ECB_NOPAD = 21
+    ALG_AES_CBC_ISO9797_M1 = 22
+    ALG_AES_CBC_ISO9797_M2 = 23
+    ALG_AES_CBC_PKCS5 = 24
+    ALG_AES_ECB_ISO9797_M1 = 25
+    ALG_AES_ECB_ISO9797_M2 = 26
+    ALG_AES_ECB_PKCS5 = 27
 
     MODE_DECRYPT = 1
     MODE_ENCRYPT = 2
 
+    CIPHER_AES_CBC = 1
+    CIPHER_AES_ECB = 2
+    CIPHER_DES_CBC = 3
+    CIPHER_DES_ECB = 4
+    CIPHER_KOREAN_SEED_CBC = 5
+    CIPHER_KOREAN_SEED_ECB = 6
+    CIPHER_RSA = 7
+
+    PAD_NULL = 0
+    PAD_NOPAD = 1
+    PAD_ISO9797_M1 = 2
+    PAD_ISO9797_M2 = 3
+    PAD_ISO9797_1_M1_ALG3 = 4
+    PAD_ISO9797_1_M2_ALG3 = 5
+    PAD_PKCS5 = 6
+    PAD_PKCS1 = 7
+    PAD_PKCS1_PSS = 8
+    PAD_PKCS1_OAEP = 9
+    PAD_ISO9796 = 10
+    PAD_ISO9796_MR = 11
+    PAD_RFC2409 = 12
+
+
     @staticmethod
-    def getInstance(algorithm, shared):
+    def getInstance(*args)
+        if len(args) == 2:
+             algorithm, externalAccess = args
+        elif len(args) == 3:
+             # map to old style algorithm name
+             cipherAlgorithm, paddingAlgorithm, externalAccess = args
+             if cipherAlgorithm == Cipher.CIPHER_RSA:
+                  algorithm = dict([(Cipher.PAD_NOPAD, Cipher.ALG_RSA_NOPAD),
+                                    (Cipher.PAD_PKCS1, Cipher.ALG_RSA_PKCS1)]). \
+                              get(paddingAlgorithm, None)
+             elif cipherAlgorithm == Cipher.CIPHER_DES_CBC:, Cipher.CIPHER_DES_ECB]:
+                  algorithm = dict([(Cipher.PAD_NOPAD, Cipher.ALG_DES_CBC_NOPAD),
+                                    (Cipher.PAD_PKCS5, Cipher.ALG_DES_CBC_PKCS5)]). \
+                              get(paddingAlgorithm, None)
+             elif cipherAlgorithm == Cipher.CIPHER_DES_ECB:
+                  algorithm = dict([(Cipher.PAD_NOPAD, Cipher.ALG_DES_ECB_NOPAD),
+                                    (Cipher.PAD_PKCS5, Cipher.ALG_DES_ECB_PKCS5)]). \
+                              get(paddingAlgorithm, None)
+        else:
+            raise TypeError(args)
+
         if algorithm in [Cipher.ALG_RSA_NOPAD, Cipher.ALG_RSA_PKCS1]:
-            return _PyCryptoRSACipher(algorithm)
+             return _PyCryptoRSACipher(algorithm)
         elif algorithm in [Cipher.ALG_DES_ECB_NOPAD, 
                            Cipher.ALG_DES_ECB_PKCS5,
                            Cipher.ALG_DES_CBC_NOPAD, 
                            Cipher.ALG_DES_CBC_PKCS5]:
-            return _pyDesDESCipher(algorithm)
+             return _pyDesDESCipher(algorithm)
         print "algorithm not known: %d" % algorithm
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
