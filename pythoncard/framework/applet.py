@@ -24,7 +24,11 @@ class Applet(object):
         return True
 
     def selectingApplet(self):
+        """ that's weird ..."""
         return self._selectingApplet
+
+    def reSelectingApplet(self):
+        return False
 
     @staticmethod
     def install(bArray, bOffset, bLength):

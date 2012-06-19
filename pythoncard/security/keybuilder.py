@@ -1,6 +1,20 @@
 from pythoncard.security import publickey, privatekey, secretkey
 
 class KeyBuilder(object):
+    ALG_TYPE_AES = 2
+    ALG_TYPE_DES = 1
+    ALG_TYPE_DSA_PRIVATE = 4
+    ALG_TYPE_DSA_PUBLIC = 3
+    ALG_TYPE_EC_F2M_PRIVATE = 6
+    ALG_TYPE_EC_F2M_PUBLIC = 5
+    ALG_TYPE_EC_FP_PRIVATE = 8
+    ALG_TYPE_EC_FP_PUBLIC = 7
+    ALG_TYPE_HMAC = 9
+    ALG_TYPE_KOREAN_SEED = 10
+    ALG_TYPE_RSA_CRT_PRIVATE = 13
+    ALG_TYPE_RSA_PRIVATE = 12
+    ALG_TYPE_RSA_PUBLIC = 11
+
     LENGTH_AES_128 = 128
     LENGTH_AES_192 = 192
     LENGTH_AES_256 = 256
@@ -32,6 +46,7 @@ class KeyBuilder(object):
     LENGTH_RSA_736 = 736
     LENGTH_RSA_768 = 768
     LENGTH_RSA_896 = 896
+
     TYPE_AES = 15
     TYPE_AES_TRANSIENT_DESELECT = 14
     TYPE_AES_TRANSIENT_RESET = 13
@@ -55,7 +70,15 @@ class KeyBuilder(object):
     TYPE_RSA_PUBLIC = 4
 
     @staticmethod
-    def buildKey(keyType, keyLength, keyEncryption):
+    def buildKey(*args):
+        if len(args) == 3:
+            keyType, keyLength, keyEncryption = args
+        elif len(args) == 4:
+            algorithmicKeyType, keyMemoryType, keyLength, keyEncryption = args
+            raise NotImplementedError(args)
+        else:
+            raise TypeError(args)
+
         if keyType == KeyBuilder.TYPE_RSA_PUBLIC:
             return publickey.PyCryptoRSAPublicKey(keyLength)
         elif keyType == KeyBuilder.TYPE_RSA_PRIVATE:
