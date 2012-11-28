@@ -38,8 +38,8 @@ PythonCard is dependant on pyDes_ and pyCrypto_ for cryptographic
 operations. The rest of the functionnalities will however work without
 those packages installed.
 
-To install it, either put the necessary directories in your
-``PYTHONPATH``, or install it via PyPi::
+To **install it**, either put the necessary directories in your
+``PYTHONPATH``, or install it via PyPi_::
 
     $ pip install JavaCard 
 
@@ -48,3 +48,4 @@ To install it, either put the necessary directories in your
 .. _`bug report`: https://bitbucket.org/benallard/pythoncard/issues
 .. _pyDes: http://twhiteman.netfirms.com/des.html
 .. _pyCrypto: https://www.dlitz.net/software/pycrypto/
+.. _PyPi: http://pypi.python.org/pypi/JavaCard
