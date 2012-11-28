@@ -2,6 +2,10 @@
  PythonCard
 ============
 
+---------------------------------
+ (a.k.a ``JavaCard`` under PyPi)
+---------------------------------
+
 This is a pure python version of the javacard operating system as found on
 javacard smartcards.
 
