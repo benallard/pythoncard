@@ -22,6 +22,6 @@ setup(
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
         'Programming Language :: Python :: 2',
         'Topic :: Software Development :: Libraries :: Python Modules',
-      ],
-      keywords='java smartcard javacard sun',
+    ],
+    keywords='java smartcard javacard sun',
 )
