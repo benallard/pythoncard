@@ -72,7 +72,7 @@ class Cipher(object):
 
 
     @staticmethod
-    def getInstance(*args)
+    def getInstance(*args):
         if len(args) == 2:
              algorithm, externalAccess = args
         elif len(args) == 3:
@@ -82,7 +82,7 @@ class Cipher(object):
                   algorithm = dict([(Cipher.PAD_NOPAD, Cipher.ALG_RSA_NOPAD),
                                     (Cipher.PAD_PKCS1, Cipher.ALG_RSA_PKCS1)]). \
                               get(paddingAlgorithm, None)
-             elif cipherAlgorithm == Cipher.CIPHER_DES_CBC:, Cipher.CIPHER_DES_ECB]:
+             elif cipherAlgorithm == Cipher.CIPHER_DES_CBC:
                   algorithm = dict([(Cipher.PAD_NOPAD, Cipher.ALG_DES_CBC_NOPAD),
                                     (Cipher.PAD_PKCS5, Cipher.ALG_DES_CBC_PKCS5)]). \
                               get(paddingAlgorithm, None)
