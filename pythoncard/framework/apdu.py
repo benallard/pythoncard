@@ -23,7 +23,7 @@ Case 4E:
 IN_BLOCKSIZE = 0x80
 OUT_BLOCKSIZE = 0x80
 
-from pythoncard.framework import APDUException, ISO7816
+from pythoncard.framework import APDUException, ISOException, ISO7816
 
 # there can only be one (1) APDU at a time ...
 _current = None
@@ -76,6 +76,7 @@ class APDU(object):
         global _current
         _current = self
         self._state = self.STATE_INITIAL
+        self._broken = False
 
         # determine the APDU type
         # Just for the fun, it's not used anywhere else
@@ -103,6 +104,11 @@ class APDU(object):
             (self.Nc, lclength)  = self.__getInLengths()
             (self.Ne, self._lelength) = self.__getOutLengths(len(bytesarr))
             self._cdataoffs += lclength - 1
+
+            if 4 + lclength + self._lelength + self.Nc != len(bytesarr):
+                # Final sanity check (as we are in an else statement)
+                self._broken = True
+            
         self._outgoinglength = 0
 
 
@@ -152,6 +158,11 @@ class APDU(object):
     def setIncomingAndReceive(self):
         if self._state != self.STATE_INITIAL:
             raise APDUException(APDUException.ILLEGAL_USE)
+
+        if self._broken:
+            """ We benefit from the fact that this is the first function called """
+            raise ISOException(ISO7816.SW_WRONG_LENGTH)
+            
 
         tobeprocessed = min(IN_BLOCKSIZE, len(self.__buffer) - self._offsetincoming - self._lelength)
         for i in range(tobeprocessed):
