@@ -13,7 +13,7 @@ class DESKey(SecretKey):
     def setKey(self, keyData, keyOff):
         raise NotImplementedError
 
-class pyDesDESKey(SecretKey):
+class pyDesDESKey(DESKey):
     def __init__(self, typ, size):
         SecretKey.__init__(self, typ, size)
         self._key = None
