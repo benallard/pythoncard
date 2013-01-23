@@ -1,3 +1,5 @@
+from pythoncard.utils import s1
+
 def _longToArray(long):
     """
     Used to transform long to Array
@@ -29,7 +31,7 @@ def _arrayTolong(bytes):
     return l
 
 def _binaryToarray(bytes):
-    return [ord(c) for c in bytes]
+    return [s1(ord(c)) for c in bytes]
 
 def _arrayTobinary(array):
     return ''.join([chr(i & 0xff) for i in array])
