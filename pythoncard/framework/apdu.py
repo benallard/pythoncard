@@ -21,7 +21,7 @@ Case 4E:
 """
 
 IN_BLOCKSIZE = 0x80
-OUT_BLOCKSIZE = 0x80
+OUT_BLOCKSIZE = 0x100
 
 from pythoncard.framework import APDUException, ISOException, ISO7816
 
@@ -60,7 +60,7 @@ class APDU(object):
         if len(bytesarr) < 4:
             raise APDUException(APDUException.BAD_LENGTH)
         self.__buffer = bytesarr
-        self.buffer = [0 for i in range(255)]
+        self.buffer = [0 for i in range(255 + 2)] # 2 for SW
         # only header is available
         for i in range(4):
             self.buffer[i] = bytesarr[i]
