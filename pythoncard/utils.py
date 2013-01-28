@@ -12,6 +12,11 @@ def signed(value, depth):
 def s1(value):
     return signed(value, 1)
 
+def s2(value):
+    return signed(value, 2)
+
+def u1(value):
+    return value & 0xff
 
 class NotAlwaysStatic(object):
     """ This makes a function both static and not static

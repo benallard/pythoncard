@@ -25,6 +25,8 @@ OUT_BLOCKSIZE = 0x80
 
 from pythoncard.framework import APDUException, ISOException, ISO7816
 
+from pythoncard.utils import u1
+
 # there can only be one (1) APDU at a time ...
 _current = None
 
@@ -115,10 +117,10 @@ class APDU(object):
     def __getInLengths(self):
         """ return a tuple (value, length of value) """
         if self.__buffer[ISO7816.OFFSET_LC] == 0:
-            return (self.__buffer[ISO7816.OFFSET_LC + 1] * 256 +
-                    self.__buffer[ISO7816.OFFSET_LC + 2]), 3
+            return (u1(self.__buffer[ISO7816.OFFSET_LC + 1]) * 256 +
+                    u1(self.__buffer[ISO7816.OFFSET_LC + 2])), 3
         else:
-            return self.__buffer[ISO7816.OFFSET_LC], 1
+            return u1(self.__buffer[ISO7816.OFFSET_LC]), 1
 
     def __getOutLengths(self, length):
         """ return a tuple (value, length of value) """
@@ -133,8 +135,8 @@ class APDU(object):
         else:
             if length != ISO7816.OFFSET_LC:
                 if self.__buffer[ISO7816.OFFSET_LC] == 0:
-                    return self.__buffer[length-1] * 256 + self.__buffer[length], 2
-            return self.__buffer[length], 1
+                    return u1(self.__buffer[length-1]) * 256 + u1(self.__buffer[length]), 2
+            return u1(self.__buffer[length]), 1
 
 
     def getBuffer(self):
