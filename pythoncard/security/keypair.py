@@ -19,8 +19,14 @@ class KeyPair(object):
         if isinstance(param1, int):
             self._algorithm = param1
             self._keylength = param2
-            self._publicKey = None
-            self._privateKey = None
+            if self._algorithm == self.ALG_RSA:
+                self._publicKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, self._keylength, None)
+                self._privateKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PRIVATE, self._keylength, None)
+            elif self._algorithm == self.ALG_RSA_CRT:
+                self._publicKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, self._keylength, None)
+                self._privateKey = KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_CRT_PRIVATE, self._keylength, None)
+            else:
+                raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
         else:
             if not isinstance(param1, RSAPublicKey):
                 raise CryptoException(CryptoException.ILLEGAL_VALUE)
