@@ -2,13 +2,13 @@ class Object(object):
     def equals(self, obj):
         return self is obj
 
-class IndexOutOfBoundsException(Exception):
+class RuntimeException(Exception):
+    pass
+
+class IndexOutOfBoundsException(RuntimeException):
     pass
 
 class ArrayIndexOutOfBoundsException(IndexOutOfBoundsException):
-    pass
-
-class RuntimeException(Exception):
     pass
 
 class SecurityException(RuntimeException):
