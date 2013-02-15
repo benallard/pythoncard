@@ -15,12 +15,12 @@ class DESKey(SecretKey):
 
 class pyDesDESKey(DESKey):
     def __init__(self, typ, size):
-        SecretKey.__init__(self, typ, size)
+        DESKey.__init__(self, typ, size)
         self._key = None
     
     def setKey(self, keyData, keyOff):
-        self._key = _arrayTobinary(keyData[keyOff:keyOff+8]) 
+        self._key = _arrayTobinary(keyData[keyOff:keyOff+(self.size / 8)]) 
         self._setInitialized()
 
     def getKey(self, keyData, keyOff):
-        arrayCopy(_binaryToarray(self._key), 0, keyData, keyOff, 8)
+        arrayCopy(_binaryToarray(self._key), 0, keyData, keyOff, self.size / 8)
