@@ -179,7 +179,12 @@ class _PyCryptoRSACipher(Cipher):
         if self.mode == self.MODE_ENCRYPT:
             (res, ) = self._theKey._theKey.encrypt(_arrayTolong(data), None)
         else:
-            res = self._theKey._theKey.decrypt(_arrayTolong(data))
+            if isinstance(self._theKey, RSAPublicKey):
+                # We are actually verifying, which can be done the same way as
+                # encrypting ...
+                (res, ) = self._theKey._theKey.encrypt(_arrayTolong(data), None)
+            else:
+                res = self._theKey._theKey.decrypt(_arrayTolong(data))
 
         buf = _longToArray(res)
 
