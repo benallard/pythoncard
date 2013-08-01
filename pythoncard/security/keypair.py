@@ -53,7 +53,7 @@ class KeyPair(object):
             self._privateKey.setTheKey(keypair)
 
     def genKeyPair(self):
-        if self._publicKey is not None or self._privateKey is not None:
+        if self._publicKey.isInitialized() or self._privateKey.isInitialized():
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
         self._pyCryptogenKeyPair()
         
