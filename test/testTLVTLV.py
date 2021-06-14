@@ -13,7 +13,7 @@ class BERTLVTest(unittest.TestCase):
         array = [0 for i in range(10)]
         tag.toBytes(array, 0)
         tlv = BERTLV.getInstance(array, 0, 2)
-        self.assertEquals(tag, tlv.getTag())
+        self.assertEqual(tag, tlv.getTag())
 
 class BERTLVfindTest(unittest.TestCase):
 
@@ -26,17 +26,17 @@ class BERTLVfindTest(unittest.TestCase):
             0)
 
         tlv2 = tlv.find(BERTag.getInstance(Tag(number=7), 0))
-        self.assertEquals(BERTag.getInstance(Tag(number=7), 0), tlv2.getTag())
+        self.assertEqual(BERTag.getInstance(Tag(number=7), 0), tlv2.getTag())
         array = [0 for i in range (10)]
         size = tlv2.getValue(array, 0)
-        self.assertEquals(4, size)
-        self.assertEquals([0, 6, 7, 56], array[0:size])
+        self.assertEqual(4, size)
+        self.assertEqual([0, 6, 7, 56], array[0:size])
 
         tlv2 = tlv.find(BERTag.getInstance(Tag(cls=2, number=5), 0))
-        self.assertEquals(BERTag.getInstance(Tag(cls=2, number=5), 0), tlv2.getTag())
+        self.assertEqual(BERTag.getInstance(Tag(cls=2, number=5), 0), tlv2.getTag())
         size = tlv2.getValue(array, 0)
-        self.assertEquals(6, size)
-        self.assertEquals([89, 4, 3, 6, 1, 6], array[0:size])
+        self.assertEqual(6, size)
+        self.assertEqual([89, 4, 3, 6, 1, 6], array[0:size])
 
     def testfindNOK(self):
         tlv = BERTLV.getInstance(
@@ -46,7 +46,7 @@ class BERTLVfindTest(unittest.TestCase):
                  ),
             0)
 
-        self.assertEquals(None, tlv.find(BERTag.getInstance(Tag(number=3), 0)))
+        self.assertEqual(None, tlv.find(BERTag.getInstance(Tag(number=3), 0)))
 
     def testfindFirst(self):
         tlv = BERTLV.getInstance(
@@ -57,18 +57,18 @@ class BERTLVfindTest(unittest.TestCase):
             0)
 
         tlv2 = tlv.find(None)
-        self.assertEquals(BERTag.getInstance(Tag(number=7), 0), tlv2.getTag())
+        self.assertEqual(BERTag.getInstance(Tag(number=7), 0), tlv2.getTag())
         array = [0 for i in range (10)]
         size = tlv2.getValue(array, 0)
-        self.assertEquals(4, size)
-        self.assertEquals([0, 6, 7, 56], array[0:size])
+        self.assertEqual(4, size)
+        self.assertEqual([0, 6, 7, 56], array[0:size])
 
     def testfindFirstNOK(self):
         tlv = BERTLV.getInstance(
             TLV(Tag(constr=True, number=17)),
             0)
 
-        self.assertEquals(None, tlv.find(None))
+        self.assertEqual(None, tlv.find(None))
 
 class BERTLVfindNextTest(unittest.TestCase):
 
@@ -93,20 +93,20 @@ class BERTLVfindNextTest(unittest.TestCase):
             tlv2,
             1)
 
-        self.assertEquals(BERTag.getInstance(tag1, 0), tlv3.getTag())
+        self.assertEqual(BERTag.getInstance(tag1, 0), tlv3.getTag())
         array = [0 for i in range (10)]
         size = tlv3.getValue(array, 0)
-        self.assertEquals(8, size)
-        self.assertEquals([89,4,3,3,1,6,7,8], array[0:size])
+        self.assertEqual(8, size)
+        self.assertEqual([89,4,3,3,1,6,7,8], array[0:size])
 
         tlv4 = tlv.findNext(
             BERTag.getInstance(tag1, 0),
             tlv2,
             2)
-        self.assertEquals(BERTag.getInstance(tag1, 0), tlv4.getTag())
+        self.assertEqual(BERTag.getInstance(tag1, 0), tlv4.getTag())
         size = tlv4.getValue(array, 0)
-        self.assertEquals(2, size)
-        self.assertEquals([89,4], array[0:size])
+        self.assertEqual(2, size)
+        self.assertEqual([89,4], array[0:size])
 
     def testfindNextNOK(self):
         tag1 = Tag(number=1)
@@ -124,7 +124,7 @@ class BERTLVfindNextTest(unittest.TestCase):
             0)
 
         tlv2 = tlv.find(BERTag.getInstance(tag1, 0))
-        self.assertEquals(None, tlv.findNext(
+        self.assertEqual(None, tlv.findNext(
             BERTag.getInstance(Tag(number=5), 0),
             tlv2,
             1))

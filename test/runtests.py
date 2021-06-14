@@ -8,13 +8,13 @@ sys.path = [os.path.dirname(os.path.dirname(os.path.abspath(__file__)))] + sys.p
 def allTests():
     path = os.path.abspath(os.path.dirname(__file__))
     files = os.listdir(path)
-    print files
+    print(files)
     test = re.compile("^test.+\.py$", re.IGNORECASE)
     files = filter(test.search, files)
     filenameToModuleName = lambda f: os.path.splitext(f)[0]
-    print files
+    print(files)
     moduleNames = map(filenameToModuleName, files)
-    print moduleNames
+    print(moduleNames)
     modules = map(__import__, moduleNames)
     load = unittest.defaultTestLoader.loadTestsFromModule
     return unittest.TestSuite(map(load, modules))

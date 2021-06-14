@@ -27,18 +27,18 @@ def commitTransaction():
 
 def makeTransientShortArray(length, event):
     warnings.warn("Array is not transient")
-    return [0 for i in xrange(length)]
+    return [0 for i in range(length)]
 
 makeTransientByteArray = makeTransientShortArray
 
 def makeTransientBooleanArray(length, event):
     warnings.warn("Array is not transient")
-    return [False for i in xrange(length)]
+    return [False for i in range(length)]
     
 
 def makeTransientObjectArray(length, event):
     warnings.warn("Array is not transient")
-    return [None for i in xrange(length)]
+    return [None for i in range(length)]
 
 def requestObjectDeletion():
     pass

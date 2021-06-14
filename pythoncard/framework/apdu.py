@@ -23,9 +23,9 @@ Case 4E:
 IN_BLOCKSIZE = 0x80
 OUT_BLOCKSIZE = 0x100
 
-from pythoncard.framework import APDUException, ISOException, ISO7816
+from ..framework import APDUException, ISOException, ISO7816
 
-from pythoncard.utils import u1
+from ..utils import u1
 
 # there can only be one (1) APDU at a time ...
 _current = None
@@ -71,7 +71,7 @@ class APDU(object):
             if (bytesarr[ISO7816.OFFSET_LC] == 0) and (len(bytesarr) > ISO7816.OFFSET_LC + 3):
                 # P3 is extended
                 P3len = 3
-            for i in xrange(ISO7816.OFFSET_LC, ISO7816.OFFSET_LC + P3len):
+            for i in range(ISO7816.OFFSET_LC, ISO7816.OFFSET_LC + P3len):
                 self.buffer[i] = bytesarr[i]
             self._offsetincoming += P3len
 

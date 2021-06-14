@@ -1,5 +1,5 @@
 from pythoncard.framework.util import arrayCopy
-from pythoncard.security.key import Key, _arrayTobinary
+from pythoncard.security.key import Key, _arrayTobinary, _binaryToarray
 
 from pyDes import pyDes
 
@@ -19,8 +19,8 @@ class pyDesDESKey(DESKey):
         self._key = None
     
     def setKey(self, keyData, keyOff):
-        self._key = _arrayTobinary(keyData[keyOff:keyOff+(self.size / 8)]) 
+        self._key = _arrayTobinary(keyData[keyOff:keyOff+(self.size // 8)])
         self._setInitialized()
 
     def getKey(self, keyData, keyOff):
-        arrayCopy(_binaryToarray(self._key), 0, keyData, keyOff, self.size / 8)
+        arrayCopy(_binaryToarray(self._key), 0, keyData, keyOff, self.size // 8)

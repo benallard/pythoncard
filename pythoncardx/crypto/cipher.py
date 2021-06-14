@@ -100,7 +100,7 @@ class Cipher(object):
                            Cipher.ALG_DES_CBC_NOPAD, 
                            Cipher.ALG_DES_CBC_PKCS5]:
              return _pyDesDESCipher(algorithm)
-        print "algorithm not known: %d" % algorithm
+        print("algorithm not known: %d" % algorithm)
         raise CryptoException(CryptoException.NO_SUCH_ALGORITHM)
 
     def __init__(self, algorithm):
@@ -167,7 +167,7 @@ class _PyCryptoRSACipher(Cipher):
     def doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
 
-        data = [0 for i in xrange(inLength)]
+        data = [0 for i in range(inLength)]
         Util.arrayCopy(inBuff, inOffset, data, 0, inLength)
         if ((self.algorithm == self.ALG_RSA_PKCS1) and
             (self.mode == self.MODE_ENCRYPT)):
@@ -230,7 +230,7 @@ class _pyDesDESCipher(Cipher):
         if bLen != 8:
             raise CryptoException(CryptoException.ILLEGAL_VALUE)
 
-        iv = [0 for i in xrange(8)]
+        iv = [0 for i in range(8)]
         Util.arrayCopy(bArray, bOff, iv, 0, bLen)
 
         iv = _arrayTobinary(iv)
@@ -249,7 +249,7 @@ class _pyDesDESCipher(Cipher):
     def  doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset):
         Cipher.doFinal(self, inBuff, inOffset, inLength, outBuff, outOffset)
 
-        data = [0 for i in xrange(inLength)]
+        data = [0 for i in range(inLength)]
         Util.arrayCopy(inBuff, inOffset, data, 0, inLength)
         data = _arrayTobinary(data)
 

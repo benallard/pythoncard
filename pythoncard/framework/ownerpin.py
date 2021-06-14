@@ -34,7 +34,7 @@ class OwnerPIN(object):
             raise ArrayIndexOutOfBoundsException()
 
         Pin = [0 for i in range(self._maxpinsize)]
-        if isinstance(pin, basestring):
+        if isinstance(pin, str):
             i = 0
             for char in pin[offset:offset+length]:
                 Pin[i] = ord(char)
@@ -68,7 +68,7 @@ class OwnerPIN(object):
         if length+offset > len(pin):
             raise ArrayIndexOutOfBoundsException()
 
-        if isinstance(pin, basestring):
+        if isinstance(pin, str):
             i = 0
             for char in pin[offset:offset+length]:
                 self.__pin[i] = ord(char)

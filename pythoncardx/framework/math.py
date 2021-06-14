@@ -53,12 +53,12 @@ class BigNumber(object):
             raise NullPointerException()
         if arrayFormat == self.FORMAT_BCD:
             self._value = 0
-            for i in xrange(bLen):
+            for i in range(bLen):
                 self._value *= 100
                 self._value += from_bcd(bArray[bOff+i])
         elif arrayFormat == self.FORMAT_HEX:
             self._value = 0
-            for i in xrange(bLen):
+            for i in range(bLen):
                 self._value = self._value << 8
                 self._value += from_hex(bArray[bOff+i])
         else:

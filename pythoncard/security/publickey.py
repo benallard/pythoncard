@@ -4,6 +4,7 @@ from pythoncard.security import CryptoException
 from pythoncard.security.key import Key, _longToArray, _arrayTolong
 
 try:
+    # pycrypto
     from Crypto.PublicKey import RSA as pyCryptoRSA
 except ImportError:
     pyCryptoRSA = None

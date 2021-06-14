@@ -15,8 +15,8 @@ class testApplet(unittest.TestCase):
         self.assertTrue(app.select())
         try:
             app.process(APDU([0,0,0,0]))
-        except ISOException, isoe:
-            self.assertEquals(0x9000,
+        except ISOException as isoe:
+            self.assertEqual(0x9000,
                               isoe.getReason())
             
 
@@ -73,11 +73,11 @@ class testApplet(unittest.TestCase):
                 app.process(apdu)
                 buf = apdu._APDU__buffer[:apdu._outgoinglength]
                 buf.extend([0x90, 0x00])
-                self.assertEquals(response, buf)
-            except ISOException, isoe:
+                self.assertEqual(response, buf)
+            except ISOException as isoe:
                 sw = isoe.getReason()
                 sw1 = sw // 256; sw2 = sw % 256
-                self.assertEquals(response, [sw1, sw2])
+                self.assertEqual(response, [sw1, sw2])
 
     def testRSA2048Applet(self):
 
@@ -99,11 +99,11 @@ class testApplet(unittest.TestCase):
         apdu = APDU([0x00, 0xAA, 0x01, 0x00] + [len(tobeencrypted)] + tobeencrypted + [0x00])
         app.process(apdu)
         buf = apdu._APDU__buffer[:apdu._outgoinglength]
-        self.assertEquals(len(buf), 1024/8)
+        self.assertEqual(len(buf), 1024/8)
         buf.extend([0x90, 0x00])
 
         apdu = APDU([0x00, 0xAA, 0x02, 0x00] + [len(buf)-2] + buf[:-2] + [0])
         app.process(apdu)
         buf = apdu._APDU__buffer[:apdu._outgoinglength]
-        self.assertEquals(tobeencrypted, buf)
+        self.assertEqual(tobeencrypted, buf)
 

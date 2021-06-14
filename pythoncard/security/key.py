@@ -24,14 +24,14 @@ def _arrayTolong(bytes):
     >>> arrayTolong([3, 19])
     4867L
     """
-    l = 0L
+    l = 0
     for i in range(len(bytes)-1, -1, -1):
         l = l << 8
         l += bytes[i]
     return l
 
 def _binaryToarray(bytes):
-    return [s1(ord(c)) for c in bytes]
+    return [s1(c) for c in bytes]
 
 def _arrayTobinary(array):
     return ''.join([chr(i & 0xff) for i in array])

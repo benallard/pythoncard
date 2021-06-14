@@ -3,9 +3,9 @@ Using slicer operators would hide the exceptions ...
 """
 
 from python.lang import ArrayIndexOutOfBoundsException
-from pythoncard.framework import JCSystem
+from ..framework import JCSystem
 
-from pythoncard.utils import s1, s2
+from ..utils import s1, s2
 
 def arrayCompare(src, srcOff, dest, destOff, length):
     try:

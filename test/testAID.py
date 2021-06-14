@@ -7,7 +7,7 @@ class testAID(unittest.TestCase):
 
     def testInit(self):
         a1 = AID([0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x04, 0x00], 0, 8)
-        self.assertEquals(a1.aid[4], 0x62)
+        self.assertEqual(a1.aid[4], 0x62)
         try:
             a2 = AID([0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x04, 0x00], 4, 4)
             self.fail()
@@ -15,7 +15,7 @@ class testAID(unittest.TestCase):
             pass
 
         a2 = AID([0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x04, 0x00, 0x03, 0x07], 4, 6)
-        self.assertEquals(a2.aid[0], 0x62)
+        self.assertEqual(a2.aid[0], 0x62)
 
         try:
             a3 = AID([7, 8, 9, 0xA0, 0x00, 0x00], 3, 5)
@@ -37,18 +37,18 @@ class testAID(unittest.TestCase):
 
     def testEquality(self):
         a1 = AID([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08], 0, 8)
-        self.assertEquals(AID([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08], 1, 8), a1)
+        self.assertEqual(AID([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08], 1, 8), a1)
         self.assertFalse(a1 == AID([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08], 1, 7))
         self.assertFalse(a1 == AID([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08], 0, 8))
 
     def testgetBytes(self):
         a1 = AID([0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x04, 0x00], 0, 8)
         dest = [0 for i in range(100)]
-        self.assertEquals(a1.getBytes(dest, 5), 8)
-        self.assertEquals(dest[5:5+8], a1.aid)
+        self.assertEqual(a1.getBytes(dest, 5), 8)
+        self.assertEqual(dest[5:5+8], a1.aid)
         dest = []
         try:
-            self.assertEquals(a1.getBytes(dest, 5), 8)
+            self.assertEqual(a1.getBytes(dest, 5), 8)
             self.fail()
         except ArrayIndexOutOfBoundsException:
             pass

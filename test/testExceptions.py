@@ -12,8 +12,8 @@ class testExceptions(unittest.TestCase):
         try:
             ISOException.throwIt(ISO7816.SW_NO_ERROR)
             self.fail()
-        except ISOException, isoe:
-            self.assertEquals(0x9000,
+        except ISOException as isoe:
+            self.assertEqual(0x9000,
                               isoe.getReason())
 
     def testInheritance(self):
@@ -27,8 +27,8 @@ class testExceptions(unittest.TestCase):
     def testCryptoException(self):
         try:
             raise CryptoException(CryptoException.UNINITIALIZED_KEY)
-        except CryptoException, ce:
-            self.assertEquals(CryptoException.UNINITIALIZED_KEY,
+        except CryptoException as ce:
+            self.assertEqual(CryptoException.UNINITIALIZED_KEY,
                              ce.getReason())
 
     def testRemote(self):

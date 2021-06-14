@@ -43,7 +43,7 @@ class testUtil(unittest.TestCase):
         a2 = [0,0,0,0,0,0,0,0,0]
         
         Util.arrayCopy(a1, 2, a2, 0, 3)
-        self.assertEquals(a1[2:2+3], a2[0:0+3])
+        self.assertEqual(a1[2:2+3], a2[0:0+3])
 
     def testShort(self):
         a = [0,0,0,0]
@@ -52,6 +52,6 @@ class testUtil(unittest.TestCase):
             s2 = random.randint(-128, 127)
             s = Util.makeShort(s1, s2)
             Util.setShort(a, 1, s)
-            self.assertEquals(s1, a[1])
-            self.assertEquals(s2, a[2])
-            self.assertEquals(s, Util.getShort(a, 1))
+            self.assertEqual(s1, a[1])
+            self.assertEqual(s2, a[2])
+            self.assertEqual(s, Util.getShort(a, 1))
