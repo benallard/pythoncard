@@ -1,7 +1,7 @@
 from python.lang import ArrayIndexOutOfBoundsException
-from pythoncard.framework import Util
-from pythoncard.security import CryptoException
-from pythoncard.security.key import Key, _longToArray, _arrayTolong
+from ..framework import Util
+from . import CryptoException
+from .key import Key, _longToArray, _arrayTolong
 
 try:
     # pycrypto
@@ -44,7 +44,7 @@ def standardSetter(f):
         f(self, *args, **kwargs)
         if (self.modulus is not None) and (self.exponent is not None):
             if self._theKey is None: #if not aready set, set it
-                self._construct();
+                self._construct()
             self._setInitialized()
     return setter
 

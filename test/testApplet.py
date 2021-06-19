@@ -99,7 +99,7 @@ class testApplet(unittest.TestCase):
         apdu = APDU([0x00, 0xAA, 0x01, 0x00] + [len(tobeencrypted)] + tobeencrypted + [0x00])
         app.process(apdu)
         buf = apdu._APDU__buffer[:apdu._outgoinglength]
-        self.assertEqual(len(buf), 1024/8)
+        self.assertEqual(len(buf), 1024//8)
         buf.extend([0x90, 0x00])
 
         apdu = APDU([0x00, 0xAA, 0x02, 0x00] + [len(buf)-2] + buf[:-2] + [0])

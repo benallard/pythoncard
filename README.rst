@@ -43,6 +43,10 @@ To **install it**, either put the necessary directories in your
 
     $ pip install JavaCard 
 
+To **run the test** try that:
+
+    $ python -m unittest discover test
+
 .. _CAPRunner: https://bitbucket.org/benallard/caprunner
 .. _WebSCard: https://bitbucket.org/benallard/webscard
 .. _`bug report`: https://bitbucket.org/benallard/pythoncard/issues

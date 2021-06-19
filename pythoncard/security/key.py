@@ -1,4 +1,4 @@
-from pythoncard.utils import s1
+from ..utils import s1
 
 def _longToArray(long):
     """
@@ -34,7 +34,7 @@ def _binaryToarray(bytes):
     return [s1(c) for c in bytes]
 
 def _arrayTobinary(array):
-    return ''.join([chr(i & 0xff) for i in array])
+    return bytes([i & 0xff for i in array])
 
 class Key(object):
 

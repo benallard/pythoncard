@@ -1,41 +1,42 @@
 import unittest
-from pythoncard.security import MessageDigest, CryptoException
+from pythoncard.security import MessageDigest
+from pythoncard.security.key import _binaryToarray
 
 class testMessageDigest(unittest.TestCase):
 
-    def testSHA1(self):
+    def testEmptySHA1(self):
         md = MessageDigest.getInstance(MessageDigest.ALG_SHA, False)
         self.assertEqual(MessageDigest.ALG_SHA, md.getAlgorithm())
         self.assertEqual(MessageDigest.LENGTH_SHA, md.getLength())
         res = [0]*20
         self.assertEqual(MessageDigest.LENGTH_SHA, md.doFinal([],0,0,res,0))
-        self.assertEqual(['\xda', '\x39', '\xa3', '\xee', '\x5e', '\x6b', '\x4b', '\x0d', '\x32', '\x55', '\xbf', '\xef', '\x95', '\x60', '\x18', '\x90', '\xaf', '\xd8', '\x07', '\x09'], res)
+        'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+        self.assertEqual(_binaryToarray(bytes.fromhex('da39a3ee5e6b4b0d3255bfef95601890afd80709')), res)
 
-        testarray = [ "abc", "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", "a", "0123456701234567012345670123456701234567012345670123456701234567"]
+    def testComplexSHA1(self):
+        md = MessageDigest.getInstance(MessageDigest.ALG_SHA, False)
+        testarray = [ b"abc", b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", b"a", b"0123456701234567012345670123456701234567012345670123456701234567"]
         repeatcount = [1, 1, 1000000, 10]
-        resultarray = [['\xA9', '\x99', '\x3E', '\x36', '\x47', '\x06', '\x81', '\x6A', '\xBA', '\x3E', '\x25', '\x71', '\x78', '\x50', '\xC2', '\x6C', '\x9C', '\xD0', '\xD8', '\x9D'],
-                       ['\x84', '\x98', '\x3E', '\x44', '\x1C', '\x3B', '\xD2', '\x6E', '\xBA', '\xAE', '\x4A', '\xA1', '\xF9', '\x51', '\x29', '\xE5', '\xE5', '\x46', '\x70', '\xF1'],
-                       ['\x34', '\xAA', '\x97', '\x3C', '\xD4', '\xC4', '\xDA', '\xA4', '\xF6', '\x1E', '\xEB', '\x2B', '\xDB', '\xAD', '\x27', '\x31', '\x65', '\x34', '\x01', '\x6F'],
-                       ['\xDE', '\xA3', '\x56', '\xA2', '\xCD', '\xDD', '\x90', '\xC7', '\xA7', '\xEC', '\xED', '\xC5', '\xEB', '\xB5', '\x63', '\x93', '\x4F', '\x46', '\x04', '\x52']]
+        resultarray = [_binaryToarray(bytes.fromhex('A9993E364706816ABA3E25717850C26C9CD0D89D')),
+                       _binaryToarray(bytes.fromhex('84983E441C3BD26EBAAE4AA1F95129E5E54670F1')),
+                       _binaryToarray(bytes.fromhex('34AA973CD4C4DAA4F61EEB2BDBAD27316534016F')),
+                       _binaryToarray(bytes.fromhex('DEA356A2CDDD90C7A7ECEDC5EBB563934F460452'))]
 
         for i in range(4):
             md.reset()
+            res = [0]*20
             for j in range(repeatcount[i]-1):
                 md.update(testarray[i], 0, len(testarray[i]))
             md.doFinal(testarray[i], 0, len(testarray[i]), res, 0)
             self.assertEqual(resultarray[i], res)
 
     def testLengths(self):
-        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, False)
-        self.assertEqual(MessageDigest.ALG_SHA_512, md.getAlgorithm())
-        self.assertEqual(MessageDigest.LENGTH_SHA_512, md.getLength())
-        md = MessageDigest.getInstance(MessageDigest.ALG_MD5, False)
-        self.assertEqual(MessageDigest.LENGTH_MD5, md.getLength())
-        md = MessageDigest.getInstance(MessageDigest.ALG_RIPEMD160, False)
-        self.assertEqual(MessageDigest.LENGTH_RIPEMD160, md.getLength())
-        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_256, False)
-        self.assertEqual(MessageDigest.LENGTH_SHA_256, md.getLength())
-        md = MessageDigest.getInstance(MessageDigest.ALG_SHA_384, False)
-        self.assertEqual(MessageDigest.LENGTH_SHA_384, md.getLength())
-        md = MessageDigest.getInstance(MessageDigest.ALG_SHA, False)
-        self.assertEqual(MessageDigest.LENGTH_SHA, md.getLength())
+        for algo, length in [(MessageDigest.ALG_SHA_512, MessageDigest.LENGTH_SHA_512),
+                 (MessageDigest.ALG_MD5, MessageDigest.LENGTH_MD5),
+                 (MessageDigest.ALG_RIPEMD160, MessageDigest.LENGTH_RIPEMD160),
+                 (MessageDigest.ALG_SHA_256, MessageDigest.LENGTH_SHA_256),
+                 (MessageDigest.ALG_SHA_384, MessageDigest.LENGTH_SHA_384),
+                 (MessageDigest.ALG_SHA, MessageDigest.LENGTH_SHA)]:
+            md = MessageDigest.getInstance(algo, False)
+            self.assertEqual(algo, md.getAlgorithm())
+            self.assertEqual(length, md.getLength())
