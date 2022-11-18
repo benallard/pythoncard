@@ -47,9 +47,9 @@ To **run the test** try that:
 
     $ python -m unittest discover test
 
-.. _CAPRunner: https://bitbucket.org/benallard/caprunner
-.. _WebSCard: https://bitbucket.org/benallard/webscard
-.. _`bug report`: https://bitbucket.org/benallard/pythoncard/issues
+.. _CAPRunner: https://github.com/benallard/caprunner
+.. _WebSCard: https://github.com/benallard/webscard
+.. _`bug report`: https://github.com/benallard/caprunner/issues/new
 .. _pyDes: http://twhiteman.netfirms.com/des.html
 .. _pyCrypto: https://www.dlitz.net/software/pycrypto/
 .. _PyPi: http://pypi.python.org/pypi/JavaCard
